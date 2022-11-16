@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=“utf8”>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="static/home.css" type="text/css">
+</head>
+
+<body>
+    <h1 style="text-align:center; margin-top: 10%; margin-bottom: 3%;">Replay Attack Detection</h1>
+    <div class="app" style="display:flex; justify-content: center; align-items: center; margin-bottom: 2%;">
+        <button class="record-btn" style="
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        border: none;
+        font-size: 10px;
+        margin-right: 20px;">
+            record
+        </button>
+        <audio controls class="audio-player"></audio>
+    </div>
+    <div class="form" style="text-align:center;">
+        <form action="/predict" method="POST">
+            <div style="margin-bottom: 30px;">
+                <label style="margin-left: 80px; margin-right: 50px; font-weight: bold;">
+                    選擇辨識模型
+                </label>
+                <input type="file" name="verify_model" accept=".pt" required>
+            </div>
+            <div style="margin-bottom: 40px;">
+                <label style="margin-left: 80px; margin-right: 50px; font-weight: bold;">
+                    選擇辨識音檔
+                </label>
+                <input type="file" name="audio_file" accept=".flac" required>
+            </div>
+            <input type="submit" value="Predict" style="position: absolute; left: 46vw; width: 7em; height: 3em;">
+        </form>
+    </div>
+    <script src="static/recorder.js?dewwwffd"></script>
+</body>
+
+</html>

@@ -1,0 +1,204 @@
+@import 'https://fonts.googleapis.com/icon?family=Material+Icons|Roboto';
+
+* {
+    outline: none;
+}
+
+.circle-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    float: left;
+    margin: 15px;
+}
+
+.icon {
+    position: absolute;
+    color: #fff;
+    font-size: 55px;
+    top: 55px;
+    left: 55px;
+    transform: translate(-50%, -50%);
+}
+
+.circle {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    padding: 2.5px;
+    background-clip: content-box;
+}
+
+.success {
+    background-color: #dedcdc;
+    border: 2.5px dashed #dedcdc;
+}
+
+.page-wrapper {
+    position: absolute;
+    top: 15%;
+    right: 20%;
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recorder_wrapper {
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 400px;
+    height: 400px;
+}
+
+.recorder {
+    display: inline-block;
+    text-align: center;
+    width: 500px;
+    max-width: 100%;
+}
+
+.record_btn {
+    width: 300px;
+    height: 300px;
+    font-family: 'Material Icons';
+    font-size: 96px;
+    color: #e74c3c;
+    background: none;
+    border: 2px solid #e74c3c;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.15s linear;
+}
+
+.record_btn:hover {
+    transition: 0.15s linear;
+    transform: scale( 1.05 );
+}
+
+.record_btn:active {
+    background: #f5f5f5;
+}
+
+.record_btn:after {
+    content: '\E029';
+}
+
+.record_btn[disabled] {
+    border: 2px solid #ccc;
+}
+
+.record_btn[disabled]:after {
+    content: '\E02B';
+    color: #ccc;
+}
+
+.record_btn[disabled]:hover {
+    transition: 0.15s linear;
+    transform: none;
+}
+
+.record_btn[disabled]:active {
+    background: none;
+}
+
+.recording {
+    animation: recording 2s infinite ease-in-out;
+    position: relative;
+}
+
+.recording:before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0px;
+    height: 0px;
+    margin: 0px;
+    border-radius: 50%;
+    background: rgba( 0, 0, 0, 0.05 );
+    animation: recording_before 2s infinite ease-in-out;
+}
+
+@keyframes recording {
+    from {
+        transform: scale( 1.1 );
+    }
+
+    50% {
+        transform: none;
+    }
+
+    to {
+        transform: scale( 1.1 );
+    }
+}
+
+@keyframes recording_before {
+    80% {
+        width: 200px;
+        height: 200px;
+        margin: -100px;
+        opacity: 0;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.record_canvas {
+    width: 60px;
+    height: 100px;
+    display: inline-block;
+    
+}
+
+.txt_btn {
+    color: #000;
+    text-decoration: none;
+    transition: 0.15s linear;
+    animation: text_btn 0.3s ease-in-out;
+}
+
+
+#msg_box {
+    font-size: 25px;
+}
+
+.container {
+    position: absolute;
+    right: 15%;
+    top: 45%;
+    width: 30%;
+    margin: 20px;
+    display: grid;
+    grid-template-rows: 80px 80px;
+}
+
+.btn {
+    font-weight: 900;
+    font-size: 20px;
+    width: 80%;
+    height: 80%;
+    cursor: pointer;
+    border: 1px solid;
+    border-color: #574da4;
+    background-color: white;
+    color: #574da4;
+}
+
+.col {
+    margin-bottom: 20px;
+}
+
