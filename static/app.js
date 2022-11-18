@@ -134,6 +134,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
 						var fname = $scope.wav_format ? $scope.outfilename_wav : $scope.outfilename_flac;
 						$scope.forceDownload(e.data.buf, fname);
+						console.log('here');
 
 					} else if (resultMode === 'asr') {
 
@@ -355,6 +356,22 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 		var click = document.createEvent("MouseEvent");
 		click.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 		link.dispatchEvent(click);
+
+		// test
+		var formData = new FormData();
+		formData.append('verify_model', '1021_ttransfer_noEMD.pt');
+		formData.append('audio_file', 'output (4).flac');
+
+		$.ajax({
+			url: "/predict",
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function (result) {
+				console.log(result);
+			}
+		});
 	};
 
 	$scope.num = 0;
@@ -431,7 +448,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			//			    oAjaxReq.setRequestHeader("Authorization", "Bearer "+key);
 			//			    oAjaxReq.withCredentials = true;
 			//		    }
-			oAjaxReq.open("post", "https://speech.googleapis.com/v1/speech:recognize" + params, true);
+			oAjaxReq.open("post", "http://127.0.0.1:5000/predict" + params, true);
 
 
 
