@@ -3,6 +3,9 @@ from flask import Flask, jsonify, request, render_template
 app = Flask(__name__)
 from torch_utils import get_prediction, set_using_model, audio_to_numpy_mfcc
 from SpeechRecognizer import *
+import mimetypes
+mimetypes.add_type('text/css', 'css')
+mimetypes.add_type('application/javascript', '.js')
 
 @app.route('/')
 @app.route('/login')
