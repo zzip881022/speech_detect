@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="recorder">
 
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body>
+<body ng-controller="RecorderController">
     <!-- partial:index.partial.html -->
     <!-- <div class="modal verifying">
         <i class="fa fa-spinner fa-spin fa-5x" id="spin-icon"></i>
@@ -31,18 +31,28 @@
                 </div>
             </div>
             <div class="right">
-                <button class="record-btn" id="record-btn">
+                <button class="record-btn" id="record-btn" ng-click="startRecording()">
                     <i class="fa fa-microphone" id="icon_not_rec" aria-hidden="true"></i>
                     <i class="fa fa-stop-circle fa-lg" id="icon_rec" aria-hidden="true"></i>
                 </button>
+                <button ng-click="stopRecording()" ng-disabled="!recording">
+                    <i class="fa fa-microphone" id="icon_not_rec" aria-hidden="true"></i>
+                    <i class="fa fa-stop-circle fa-lg" id="icon_rec" aria-hidden="true"></i>
+                </button>
+                <div class="row">
+                    <div class="span12 text-center" ng-show="recording">
+                        <span class="label label-important">Recording...</label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="backdrop"></div>
     <!-- partial -->
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js'></script>
-    <script src="static/recorder_login.js?wwwssffrswwfqqwsw"></script>
-
+    <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js'></script> -->
+    <!-- <script src="static/recorder_login.js?wwwssffrswwfqqwsw"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
+    <script src="static/app.js?dwdddwdwswwwwd"></script>
 </body>
 
 </html>
