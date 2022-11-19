@@ -53,9 +53,23 @@ $('#fab_send').click(function(e) {
 
 //Listen user voice
 $('#fab_listen').click(function() {
+  //=====錄語音傳去側錄模型辨識結果========
+
+
+  //=====================================
   var recognition = new webkitSpeechRecognition();
   
   loadBeat(true);
+  recognition.onstart=function(){
+    //開始辨識時
+    console.log('開始辨識...');
+  };
+  recognition.onend=function(){
+    //停止辨識時
+    console.log('停止辨識!');
+    
+  };
+
   recognition.onresult = function(event) {
     var text = event.results[0][0].transcript;
     $('#chatSend').val(text);
@@ -77,6 +91,7 @@ $('#fab_listen').click(function() {
   recognition.lang = "zh-TW";
    recognition.interimResults = true;
   recognition.start();
+
 });
 
 // Color options
@@ -229,6 +244,8 @@ function checkUsername(username) {
   return false;
 }
 
+
+
 function validateEmail(email) {
   var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
   if (!emailReg.test(email)) {
@@ -245,3 +262,40 @@ if (readCookie('fab_chat_username') === null || readCookie('fab_chat_email') ===
 }
 
 hideChat(false);
+
+
+//=============================== button function ============================================
+function account_total_money()
+{
+  $('#chatSend').val("帳面餘額");
+}
+
+
+function account_available_balance()
+{
+  $('#chatSend').val("可用餘額");
+}
+
+
+function agreed_wire_transfer()
+{
+  $('#chatSend').val("約定轉帳");
+}
+
+function regular_wire_transfer()
+{
+  $('#chatSend').val("非約定轉帳");
+}
+
+function account_transaction_record()
+{
+  $('#chatSend').val("交易紀錄");
+}
+
+function share_account_imformation()
+{
+  $('#chatSend').val("分享帳戶");
+}
+
+//============================================================================================
+
