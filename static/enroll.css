@@ -30,15 +30,20 @@
     background-clip: content-box;
 }
 
-.success {
+.notRec {
     background-color: #dedcdc;
     border: 2.5px dashed #dedcdc;
 }
 
+.Rec {
+    background-color: #12e12a;
+    border: 2.5px dashed #12e12a;
+}
+
 .page-wrapper {
     position: absolute;
-    top: 15%;
-    right: 20%;
+    top: 22%;
+    right: 22%;
     width: 30%;
     display: flex;
     align-items: center;
@@ -178,8 +183,8 @@
 
 .container {
     position: absolute;
-    right: 15%;
-    top: 45%;
+    right: 17%;
+    top: 50%;
     width: 30%;
     margin: 20px;
     display: grid;

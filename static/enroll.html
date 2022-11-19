@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="recorder">
 
 <head>
     <meta charset="UTF-8">
@@ -11,11 +11,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="enroll.css?feswsddwsqsqwwfe">
+    <link rel="stylesheet" href="enroll.css?fesqwwfe">
 
 </head>
 
-<body>
+<body ng-controller="RecorderController">
     <div class="recorder_wrapper">
         <div class="recorder">
             <button class="record_btn" id="button"></button>
@@ -24,21 +24,21 @@
     </div>
     <div class="page-wrapper">
         <div class="circle-wrapper">
-            <div class="success circle"></div>
+            <div class="notRec circle"></div>
             <div class="icon">
                 <i class="fa fa-check"></i>
             </div>
         </div>
 
         <div class="circle-wrapper">
-            <div class="success circle"></div>
+            <div class="notRec circle"></div>
             <div class="icon">
                 <i class="fa fa-check"></i>
             </div>
         </div>
 
         <div class="circle-wrapper">
-            <div class="success circle"></div>
+            <div class="notRec circle"></div>
             <div class="icon">
                 <i class="fa fa-check"></i>
             </div>
@@ -51,7 +51,8 @@
         <div class="col">
             <button class="btn">Reset last record</button>
     </div>
-    <script src="enroll.js?fedwdswwefe"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
+    <script src="enroll_test.js?fdweddswdswwefe"></script>
 </body>
 
 </html>
