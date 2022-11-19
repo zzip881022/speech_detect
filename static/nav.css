@@ -166,3 +166,9 @@ i {
 		left: -25px;
 	}
 }
+
+
+a:hover {
+	color: white;
+	cursor: pointer;
+}
