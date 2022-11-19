@@ -2,6 +2,7 @@ var msg_box = document.getElementById('msg_box'),
     recordBtn = document.getElementById('button'),
     resetBtn = document.getElementById('reset'),
     replayBtn = document.getElementById('replay'),
+    registerBtn = document.getElementById('register'),
     check = document.getElementsByClassName('circle'),
     hint = [
         '',
@@ -105,6 +106,11 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
                 check[record_times].classList.add('Rec');
                 record_times++;
                 msg_box.innerHTML = hint[record_times];
+                if (record_times == 3) {
+                    registerBtn.classList.remove('uncompleted');
+                    registerBtn.classList.add('completed');
+                    registerBtn.removeAttribute('disabled');
+                }
             }
 
             recordBtn.classList.remove('recording');
@@ -215,6 +221,11 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
                 console.log(result);
 
                 if (result == 'delete success') { // 避免還沒加入到目錄中就被 reset 而造成 error
+                    if (record_times == 3) {
+                        registerBtn.classList.remove('completed');
+                        registerBtn.classList.add('uncompleted');
+                        registerBtn.disabled = true;
+                    }
                     record_times--;
                     check[record_times].classList.remove('Rec');
                     check[record_times].classList.add('notRec');
@@ -231,11 +242,10 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
             const audio = document.createElement("audio");
             audio.src = "speech_file/recording/flac/" + people_num + '/train' + record_times + '.flac';
             console.log('播放音源位置 = ' + audio.src);
-            audio.play().catch(function() {
+            audio.play().catch(function () {
                 alert('Replay mistake! Please try it later.');
             });
-        }
-        else {
+        } else {
             alert('No data. Please record first!');
         }
     }
