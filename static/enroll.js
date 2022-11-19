@@ -15,8 +15,18 @@ var msg_box = document.getElementById('msg_box'),
     };
 
 var recorderApp = angular.module('recorder', []);
-
-var record_times = 0;
+var record_times = 0;   // 紀錄錄音到第幾次(共三次)
+var people_num = 0; // 紀錄第幾個人
+$.ajax({
+    url: "/count_people_num",
+    type: 'POST',
+    processData: false,
+    contentType: false,
+    success: function (result) {
+        console.log('共' + result + '人');
+        people_num = result;
+    }
+});
 
 recorderApp.controller('RecorderController', ['$scope', function ($scope) {
     $scope.audio_context = null;
@@ -38,7 +48,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
     $scope.flacdata.bps = 16;
     $scope.flacdata.channels = 1;
     $scope.flacdata.compression = 5;
-    $scope.wav_format = false;
+    $scope.wav_format = true;
     $scope.outfilename_flac = "output.flac";
     $scope.outfilename_wav = "output.wav";
 
@@ -279,41 +289,26 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         var url = (window.URL || window.webkitURL).createObjectURL(blob);
         var link = window.document.createElement('a');
         link.href = url;
-        link.download = filename || 'output.flac';
+        link.download = 'train' + record_times + '.flac';
         //NOTE: FireFox requires a MouseEvent (in Chrome a simple Event would do the trick)
         var click = document.createEvent("MouseEvent");
         click.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
         link.dispatchEvent(click);
 
-        // // test
-        // var formData = new FormData();
-        // formData.append('verify_model', '1021_ttransfer_noEMD.pt');
-        // // formData.append('audio_file', blob);
-        // formData.append('audio_file', 'output.flac');
+        // test
+        var formData = new FormData();
+        formData.append('audio_file', 'train' + record_times + '.flac');
 
-        // $.ajax({
-        //     url: "/predict",
-        //     type: 'POST',
-        //     data: formData,
-        //     processData: false,
-        //     contentType: false,
-        //     success: function (result) {
-        //         console.log(result);
-        //         if (result == '1') {
-        //             // show the modal
-        //             var ele = document.getElementsByClassName("modal")[0];
-        //             ele.style.visibility = "visible";
-        //             ele.style.opacity = "1";
-
-        //             // show backdrop effect
-        //             var backdrop = document.getElementsByClassName("backdrop")[0];
-        //             backdrop.style.opacity = "1";
-        //             backdrop.style.visibility = "visible";
-
-        //             setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
-        //         }
-        //     }
-        // });
+        $.ajax({
+            url: "/moveto/" + people_num + '/' + record_times,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                console.log(result);
+            }
+        });
     };
 
     $scope.num = 0;
