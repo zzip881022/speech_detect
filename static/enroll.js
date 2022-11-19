@@ -1,6 +1,7 @@
 var msg_box = document.getElementById('msg_box'),
     recordBtn = document.getElementById('button'),
     resetBtn = document.getElementById('reset'),
+    replayBtn = document.getElementById('replay'),
     check = document.getElementsByClassName('circle'),
     hint = [
         '',
@@ -223,6 +224,20 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
                 }
             }
         });
+    }
+
+    replayBtn.onclick = () => {
+        if (record_times > 0) {
+            const audio = document.createElement("audio");
+            audio.src = "speech_file/recording/flac/" + people_num + '/train' + record_times + '.flac';
+            console.log('播放音源位置 = ' + audio.src);
+            audio.play().catch(function() {
+                alert('Replay mistake! Please try it later.');
+            });
+        }
+        else {
+            alert('No data. Please record first!');
+        }
     }
 
     $scope.userMediaFailed = function (code) {

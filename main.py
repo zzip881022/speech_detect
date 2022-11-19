@@ -61,7 +61,7 @@ def chat():
 
 @app.route('/moveto/<folder_num>/<train_data_num>', methods=['POST'])
 def moveto(folder_num, train_data_num):
-    path = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/speech_file/recording/flac/' + folder_num
+    path = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/static/speech_file/recording/flac/' + folder_num
 
     if not os.path.isdir(path):  # 不存在就建立
         os.makedirs(path)
@@ -77,7 +77,7 @@ def moveto(folder_num, train_data_num):
 
     time.sleep(2)
     file_source = 'C:/Users/Alice/Downloads/'
-    file_destination = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/speech_file/recording/flac/' + folder_num
+    file_destination = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/static/speech_file/recording/flac/' + folder_num
     audio_file = request.form['audio_file']
     shutil.move(file_source + audio_file, file_destination)
 
@@ -87,13 +87,13 @@ def moveto(folder_num, train_data_num):
 @app.route('/count_people_num', methods=['POST'])
 # 統計資料夾內有幾個檔案，並回傳當作註冊人的編號
 def count():
-    DIR = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/speech_file/recording/flac'  # 要統計的資料夾
+    DIR = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/static/speech_file/recording/flac'  # 要統計的資料夾
     return str(len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
 
 
 @app.route('/delete/<folder_num>/<train_data_num>', methods=['POST'])
 def delete(folder_num, train_data_num):
-    DIR = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/speech_file/recording/flac/'
+    DIR = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/static/speech_file/recording/flac/'
     try:
         os.remove(DIR + folder_num + '/train' + train_data_num + '.flac')
     except:
