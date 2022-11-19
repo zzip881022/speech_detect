@@ -77,16 +77,6 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			icon_not_rec.style.display = "inline-block";
 			icon_rec.style.display = "none";
 
-			// show the modal
-			var ele = document.getElementsByClassName("modal")[0];
-			ele.style.visibility = "visible";
-			ele.style.opacity = "1";
-
-			// show backdrop effect
-			var backdrop = document.getElementsByClassName("backdrop")[0];
-			backdrop.style.opacity = "1";
-			backdrop.style.visibility = "visible";
-
 			if (!$scope.recording) {
 				return;
 			}
@@ -360,7 +350,8 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 		// test
 		var formData = new FormData();
 		formData.append('verify_model', '1021_ttransfer_noEMD.pt');
-		formData.append('audio_file', 'output (4).flac');
+		// formData.append('audio_file', blob);
+		formData.append('audio_file', 'output.flac');
 
 		$.ajax({
 			url: "/predict",
@@ -370,6 +361,19 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			contentType: false,
 			success: function (result) {
 				console.log(result);
+				if (result == '1') {
+					// show the modal
+					var ele = document.getElementsByClassName("modal")[0];
+					ele.style.visibility = "visible";
+					ele.style.opacity = "1";
+
+					// show backdrop effect
+					var backdrop = document.getElementsByClassName("backdrop")[0];
+					backdrop.style.opacity = "1";
+					backdrop.style.visibility = "visible";
+
+					setTimeout("location.href='http://127.0.0.1:5000/chat'",2000); // 2秒後跳轉頁面
+				}
 			}
 		});
 	};
