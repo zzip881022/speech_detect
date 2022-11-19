@@ -65,7 +65,7 @@ def moveto(folder_num, train_data_num):
 
     if not os.path.isdir(path):  # 不存在就建立
         os.makedirs(path)
-    elif train_data_num=='1':   #存在且不是現在這個人的資料就刪掉後再建立
+    elif train_data_num == '1':  # 存在且不是現在這個人的資料就刪掉後再建立
         print("existinnnnnnnnng")
         try:
             shutil.rmtree(path)
@@ -83,8 +83,22 @@ def moveto(folder_num, train_data_num):
 
     return 'success'
 
+
 @app.route('/count_people_num', methods=['POST'])
 # 統計資料夾內有幾個檔案，並回傳當作註冊人的編號
-def count():    
-    DIR = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/speech_file/recording/flac' #要統計的資料夾
+def count():
+    DIR = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/speech_file/recording/flac'  # 要統計的資料夾
     return str(len([name for name in os.listdir(DIR) if os.path.isdir(os.path.join(DIR, name))]))
+
+
+@app.route('/delete/<folder_num>/<train_data_num>', methods=['POST'])
+def delete(folder_num, train_data_num):
+    DIR = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/speech_file/recording/flac/'
+    try:
+        os.remove(DIR + folder_num + '/train' + train_data_num + '.flac')
+    except:
+        return 'delete error'
+    else:
+        return 'delete success'
+    
+    

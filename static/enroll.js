@@ -1,10 +1,14 @@
 var msg_box = document.getElementById('msg_box'),
     recordBtn = document.getElementById('button'),
+    resetBtn = document.getElementById('reset'),
     check = document.getElementsByClassName('circle'),
+    hint = [
+        '',
+        'The second time',
+        'The last time',
+        'Finished setting'
+    ],
     lang = {
-        'second_time': 'The second time',
-        'last_time': 'The last time',
-        'complete': 'Finished setting',
         'recording': 'Recording...',
         'mic_error': 'Error accessing the microphone',
         'press_to_start': 'Press to set password',
@@ -15,7 +19,7 @@ var msg_box = document.getElementById('msg_box'),
     };
 
 var recorderApp = angular.module('recorder', []);
-var record_times = 0;   // 紀錄錄音到第幾次(共三次)
+var record_times = 0; // 紀錄錄音到第幾次(共三次)
 var people_num = 0; // 紀錄第幾個人
 $.ajax({
     url: "/count_people_num",
@@ -96,22 +100,10 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         if ($scope.recording === true) {
             console.log("錄音结束");
             if (record_times < 3) {
-                if (record_times == 0) {
-                    msg_box.innerHTML = lang.second_time;
-                    check[record_times].classList.remove('notRec');
-                    check[record_times].classList.add('Rec');
-                    record_times++;
-                } else if (record_times == 1) {
-                    msg_box.innerHTML = lang.last_time;
-                    check[record_times].classList.remove('notRec');
-                    check[record_times].classList.add('Rec');
-                    record_times++;
-                } else if (record_times == 2) {
-                    msg_box.innerHTML = lang.complete;
-                    check[record_times].classList.remove('notRec');
-                    check[record_times].classList.add('Rec');
-                    record_times++;
-                }
+                check[record_times].classList.remove('notRec');
+                check[record_times].classList.add('Rec');
+                record_times++;
+                msg_box.innerHTML = hint[record_times];
             }
 
             recordBtn.classList.remove('recording');
@@ -212,6 +204,27 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         }
     };
 
+    resetBtn.onclick = () => {
+        $.ajax({
+            url: "/delete/" + people_num + '/' + record_times,
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                console.log(result);
+
+                if (result == 'delete success') { // 避免還沒加入到目錄中就被 reset 而造成 error
+                    record_times--;
+                    check[record_times].classList.remove('Rec');
+                    check[record_times].classList.add('notRec');
+                    msg_box.innerHTML = hint[record_times];
+                } else {
+                    alert('Reset mistake! Please try it later.');
+                }
+            }
+        });
+    }
+
     $scope.userMediaFailed = function (code) {
         console.log('grabbing microphone failed: ' + code);
     };
@@ -295,10 +308,9 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         click.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
         link.dispatchEvent(click);
 
-        // test
+        // 將錄音移到指定目錄下
         var formData = new FormData();
         formData.append('audio_file', 'train' + record_times + '.flac');
-
         $.ajax({
             url: "/moveto/" + people_num + '/' + record_times,
             type: 'POST',
