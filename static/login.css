@@ -239,13 +239,17 @@ input::-moz-focus-inner {
   background-color: #52f792;
 }
 
+.verify_failed {
+  background-color: #f80a0a;
+}
+
 #identify {
   position: absolute;
   top: 30%;
   font-size: 20px;
 }
 
-#spin-icon {
+#modal_icon {
   position: absolute;
   top: 45%;
 }
