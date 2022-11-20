@@ -156,11 +156,11 @@ def get_prediction():
     test_output=using_model(data)
     _,pred_y=torch.max(test_output,1)
 
-    return pred_y
+    # return pred_y
 
-    # if pred_y.item()==1:
-    #     print("真實語音")
-    #     return 1
-    # else:
-    #     print("欺騙語音") 
-    #     return 0
+    if pred_y.item()==1:
+        print("真實語音")
+        return '1'
+    else:
+        print("欺騙語音") 
+        return '0'
