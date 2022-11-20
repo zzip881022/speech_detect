@@ -98,20 +98,71 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
     };
 
+    //---------------------- google api 需要的變數 ------------------------
+    var final_transcript = ''; // 最終的辨識訊息的變數
+    var recognizing = false; // 是否辨識中
+
+    //--------------------------------------------------------------------
+
     recordBtn.onclick = () => {
+
+        //-------------- speech-to-text function setting -----------------
+        var recognition = new webkitSpeechRecognition();
+
+        recognition.onstart = function () { // 設定開始辨識時會執行的code
+            recognizing = true; // 狀態設定為辨識中
+            console.log('開始api文字辨識...');
+        };
+
+        recognition.onend = function () { // 設定辨識完成時執行的code
+            recognizing = false; // 狀態設定為「非辨識中」
+            console.log('結束api文字辨識...');
+        };
+
+        recognition.onresult = function (event) { //有辨識結果時
+            var text = event.results[0][0].transcript;
+            final_transcript = text;
+            console.log(final_transcript);
+        }
+
+        recognition.onerror = function (event) {
+            console.error(event);
+            recognition.stop()
+
+            recognizing = false;
+
+        }
+        recognition.lang = "zh-TW"; //語言設定
+        //----------------------------------------------------------------
+        if (recognizing) { // 如果正在辨識，則停止。
+            recognition.stop();
+        } else { // 否則就開始辨識
+            if (record_times>=3) {
+                console.log("超過三個音檔不呼叫api");
+            } else {
+                final_transcript = ''; // 最終的辨識訊息變數
+                
+                recognition.start(); // 開始辨識
+            }
+        }
+        //----------------------------------------------------------------
+
         if ($scope.recording === true) {
             console.log("錄音结束");
+
             if (record_times < 3) {
                 check[record_times].classList.remove('notRec');
                 check[record_times].classList.add('Rec');
                 record_times++;
                 msg_box.innerHTML = hint[record_times];
+
                 if (record_times == 3) {
                     registerBtn.classList.remove('uncompleted');
                     registerBtn.classList.add('completed');
                     registerBtn.removeAttribute('disabled');
                 }
             }
+
 
             recordBtn.classList.remove('recording');
 
@@ -132,6 +183,8 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
             $scope.input.disconnect();
             $scope.node.disconnect();
             $scope.input = $scope.node = null;
+
+
         } else {
             if (record_times >= 3) {
                 alert('已完成註冊!');
@@ -163,6 +216,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
                             var fname = $scope.wav_format ? $scope.outfilename_wav : $scope.outfilename_flac;
                             $scope.forceDownload(e.data.buf, fname);
+
 
                         } else if (resultMode === 'asr') {
 
