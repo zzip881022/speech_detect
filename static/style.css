@@ -91,7 +91,7 @@ body {
   height: 90%;
   margin: 20px;
   font-size: 12px;
-  line-height: 22px;
+  line-height: 15px;
   font-family: 'Roboto';
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
@@ -284,7 +284,7 @@ body {
 .chat_converse {
   position: relative;
   background: inherit;
-  margin: 6px 0 0 0;
+  margin: 30px 0 0 0;
   max-height: 400px;
   min-height: 400px;
   font-size: 12px;
@@ -758,4 +758,19 @@ strong.chat_time {
   height: 100%;
   cursor: pointer;
   box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+}
+
+
+.tag.approved {
+  background-color: #49f079;
+  color: white;
+}
+
+.tag {
+  position: absolute;
+  left: 42%;
+  width: 15%;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 15px;
 }

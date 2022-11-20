@@ -4,6 +4,7 @@ from torch_utils import get_prediction, set_using_model, audio_to_numpy_mfcc
 import shutil
 import os
 import time
+import subprocess
 import mimetypes
 
 mimetypes.add_type('text/css', '.css')
@@ -12,8 +13,8 @@ mimetypes.add_type('application/javascript', '.js')
 app = Flask(__name__)
 
 file_source = 'C:/Users/Alice/Downloads/'
-file_destination = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app'
-enroll_save_destination = 'C:/Users/Alice/Desktop/Graduate-project/flask/pytorch-flask-tutorial/app/static/speech_file/recording/flac/'
+file_destination = 'D:/Codes/graduate_project/speech_detect'
+enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
 
 
 @app.route('/')
@@ -29,20 +30,23 @@ def predict():
         verify_model = request.form['verify_model']
         set_using_model(verify_model)
         audio_file = request.form['audio_file']
-        # shutil.move(file_source + audio_file,file_destination)
-        audio_to_numpy_mfcc(audio_file)
+        shutil.move(file_source + audio_file,file_destination)
+        subprocess.run("ffmpeg -i " + audio_file + " -c:v copy -c:a flac transfer.flac")
+        time.sleep(3)
+        audio_to_numpy_mfcc("transfer.flac")
         prediction = get_prediction()
         # data = {'prediction': prediction.item(), 'verify':verify_model, 'audio':audio_file}
 
     time.sleep(3)
 
-    # 辨識完後刪除檔案
-    # try:
-    #     os.remove(file_destination + '/' + audio_file)
-    # except OSError as e:
-    #     print(e)
-    # else:
-    #     print("File is deleted successfully")
+    #辨識完後刪除檔案
+    try:
+        os.remove(file_destination + '/' + audio_file)
+        os.remove(file_destination + '/transfer.flac')
+    except OSError as e:
+        print(e)
+    else:
+        print("File is deleted successfully")
 
     
     return prediction
