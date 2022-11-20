@@ -1,4 +1,7 @@
 var recorderApp = angular.module('recorder', []);
+var modal = document.getElementsByClassName("modal")[0];
+var modal_status = document.querySelector("#modal_status");
+var modal_icon = document.querySelector("#modal_icon");
 const recordBtn = document.querySelector("#record-btn");
 const icon_not_rec = document.querySelector("#icon_not_rec");
 const icon_rec = document.querySelector("#icon_rec");
@@ -71,6 +74,16 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
 	recordBtn.onclick = () => {
 		if ($scope.recording === true) {
+			// show the modal
+			modal.style.visibility = "visible";
+			modal.style.opacity = "1";
+			modal_status.innerHTML = "Identifying...";
+
+			// show backdrop effect
+			var backdrop = document.getElementsByClassName("backdrop")[0];
+			backdrop.style.opacity = "1";
+			backdrop.style.visibility = "visible";
+
 			recordBtn.classList.remove("Rec");
 			recordBtn.classList.add("notRec");
 			console.log("錄音结束");
@@ -173,80 +186,11 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 		}
 	};
 
-	// $scope.startRecording = function (e) {
-	// 	if ($scope.recording)
-	// 		return;
-
-	// 	console.log('start recording'); //DEBUG
-
-	// 	$scope.encoder = new Worker('static/encoder.js?dwdw');
-
-	// 	if ($scope.wav_format == true) {
-	// 		$scope.encoder.postMessage({
-	// 			cmd: 'save_as_wavfile'
-	// 		});
-	// 	}
-
-	// 	$scope.encoder.onmessage = function (e) {
-
-	// 		if (e.data.cmd == 'end') {
-
-	// 			var resultMode = $scope.result_mode;
-
-	// 			if (resultMode === 'file') {
-
-	// 				var fname = $scope.wav_format ? $scope.outfilename_wav : $scope.outfilename_flac;
-	// 				$scope.forceDownload(e.data.buf, fname);
-
-	// 			} else if (resultMode === 'asr') {
-
-	// 				if ($scope.wav_format) {
-	// 					//can only use FLAC format (not WAVE)!
-	// 					alert('Can only use FLAC format for speech recognition!');
-	// 				} else {
-	// 					$scope.sendASRRequest(e.data.buf);
-	// 				}
-
-	// 			} else {
-
-	// 				console.error('Unknown mode for processing STOP RECORDING event: "' + resultMode + '"!');
-	// 			}
-
-
-	// 			$scope.encoder.terminate();
-	// 			$scope.encoder = null;
-
-	// 		} else if (e.data.cmd == 'debug') {
-
-	// 			console.log(e.data);
-
-	// 		} else {
-
-	// 			console.error('Unknown event from encoder (WebWorker): "' + e.data.cmd + '"!');
-	// 		}
-	// 	};
-
-	// 	if (navigator.webkitGetUserMedia)
-	// 		navigator.webkitGetUserMedia({
-	// 			video: false,
-	// 			audio: true
-	// 		}, $scope.gotUserMedia, $scope.userMediaFailed);
-	// 	else if (navigator.mozGetUserMedia)
-	// 		navigator.mozGetUserMedia({
-	// 			video: false,
-	// 			audio: true
-	// 		}, $scope.gotUserMedia, $scope.userMediaFailed);
-	// 	else
-	// 		navigator.getUserMedia({
-	// 			video: false,
-	// 			audio: true
-	// 		}, $scope.gotUserMedia, $scope.userMediaFailed);
-
-	// };
 
 	$scope.userMediaFailed = function (code) {
 		console.log('grabbing microphone failed: ' + code);
 	};
+
 
 	$scope.gotUserMedia = function (localMediaStream) {
 		$scope.recording = true;
@@ -316,25 +260,6 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 		$scope.$apply();
 	};
 
-	// $scope.stopRecording = function () {
-	// 	if (!$scope.recording) {
-	// 		return;
-	// 	}
-	// 	$scope.recordButtonStyle = "red-btn";
-	// 	console.log('stop recording');
-	// 	var tracks = $scope.stream.getAudioTracks()
-	// 	for (var i = tracks.length - 1; i >= 0; --i) {
-	// 		tracks[i].stop();
-	// 	}
-	// 	$scope.recording = false;
-	// 	$scope.encoder.postMessage({
-	// 		cmd: 'finish'
-	// 	});
-
-	// 	$scope.input.disconnect();
-	// 	$scope.node.disconnect();
-	// 	$scope.input = $scope.node = null;
-	// };
 
 	//create A-element for data BLOB and trigger download
 	$scope.forceDownload = function (blob, filename) {
@@ -362,17 +287,27 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			success: function (result) {
 				console.log(result);
 				if (result == '1') {
-					// show the modal
-					var ele = document.getElementsByClassName("modal")[0];
-					ele.style.visibility = "visible";
-					ele.style.opacity = "1";
+					// show the success modal
+					modal.classList.remove("verifying");
+					modal.classList.add("verify_success");
+					modal_icon.classList.remove("fa-spinner", "fa-spin");
+					modal_icon.classList.add("fa-check-circle");
+					modal_icon.style.color = 'white';
+					modal_status.innerHTML = "Success";
+					modal_status.style.color = 'white';
 
-					// show backdrop effect
-					var backdrop = document.getElementsByClassName("backdrop")[0];
-					backdrop.style.opacity = "1";
-					backdrop.style.visibility = "visible";
+					setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
+				} else if (result == '0') {
+					// show the failed modal
+					modal.classList.remove("verifying");
+					modal.classList.add("verify_failed");
+					modal_icon.classList.remove("fa-spinner", "fa-spin");
+					modal_icon.classList.add("fa-times");
+					modal_icon.style.color = 'white';
+					modal_status.innerHTML = "Failed";
+					modal_status.style.color = 'white';
 
-					setTimeout("location.href='http://127.0.0.1:5000/chat'",2000); // 2秒後跳轉頁面
+					setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
 				}
 			}
 		});

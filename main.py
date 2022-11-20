@@ -4,6 +4,7 @@ from torch_utils import get_prediction, set_using_model, audio_to_numpy_mfcc
 import shutil
 import os
 import time
+import subprocess
 import mimetypes
 
 mimetypes.add_type('text/css', '.css')
@@ -27,25 +28,26 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    time.sleep(2)
+    time.sleep(1)
     if request.method == 'POST':
         verify_model = request.form['verify_model']
         set_using_model(verify_model)
         audio_file = request.form['audio_file']
-        # shutil.move(file_source + audio_file,file_destination)
-        audio_to_numpy_mfcc(audio_file)
+        shutil.move(file_source + audio_file,file_destination)
+        subprocess.run("ffmpeg -i " + audio_file + " -c:v copy -c:a flac transfer.flac")
+        time.sleep(1)
+        audio_to_numpy_mfcc("transfer.flac")
         prediction = get_prediction()
         # data = {'prediction': prediction.item(), 'verify':verify_model, 'audio':audio_file}
 
-    time.sleep(3)
-
-    # 辨識完後刪除檔案
-    # try:
-    #     os.remove(file_destination + '/' + audio_file)
-    # except OSError as e:
-    #     print(e)
-    # else:
-    #     print("File is deleted successfully")
+    #辨識完後刪除檔案
+    try:
+        os.remove(file_destination + '/' + audio_file)
+        os.remove(file_destination + '/transfer.flac')
+    except OSError as e:
+        print(e)
+    else:
+        print("File is deleted successfully")
 
     
     return prediction

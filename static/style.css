@@ -88,10 +88,9 @@ body {
 .chat {
   position: absolute;
   width: 95%;
-  height: 90%;
   margin: 20px;
   font-size: 12px;
-  line-height: 22px;
+  line-height: 15px;
   font-family: 'Roboto';
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
@@ -103,10 +102,11 @@ body {
 }
 
 .chat_header {
-  margin: 10px;
+  height: 50px;
   font-size: 14px;
   font-family: 'Roboto';
   font-weight: 500;
+  box-shadow: 0 1.5px 6px rgb(0 0 0 / 12%);
 }
 
 .chat_header .span {
@@ -284,7 +284,7 @@ body {
 .chat_converse {
   position: relative;
   background: inherit;
-  margin: 6px 0 0 0;
+  margin: 0;
   max-height: 400px;
   min-height: 400px;
   font-size: 12px;
@@ -307,7 +307,7 @@ body {
 
 .chat .chat_converse .chat_msg_item {
   position: relative;
-  margin: 8px 0 15px 0;
+  margin: 30px 0 30px 0;
   padding: 8px 10px;
   max-width: 40%;
   display: block;
@@ -758,4 +758,28 @@ strong.chat_time {
   height: 100%;
   cursor: pointer;
   box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+}
+
+
+.tag.approved {
+  background-color: #49f079;
+}
+
+.tag.rejected {
+  background-color: #f04949;
+}
+
+.tag {
+  position: absolute;
+  left: 42%;
+  width: 14%;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 15px;
+  margin: 15px 10px;
+  color: white;
+}
+
+.zmdi-more-vert {
+  margin: 15px;
 }
