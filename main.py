@@ -12,9 +12,9 @@ mimetypes.add_type('application/javascript', '.js')
 
 app = Flask(__name__)
 
-file_source = 'C:/Users/wyes9/Downloads/'
-file_destination = 'D:/speech_detect_web'
-enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
+file_source = 'C:/Users/Alice/Downloads/'
+file_destination = 'D:/Codes/graduate_project/speech_detect'
+enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
 
 # file_source = 'C:/Users/wyes9/Downloads/'
 # file_destination = 'D:/speech_detect_web'

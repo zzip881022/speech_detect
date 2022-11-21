@@ -183,8 +183,6 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
             $scope.input.disconnect();
             $scope.node.disconnect();
             $scope.input = $scope.node = null;
-
-
         } else {
             if (record_times >= 3) {
                 alert('已完成註冊!');
@@ -216,17 +214,6 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
                             var fname = $scope.wav_format ? $scope.outfilename_wav : $scope.outfilename_flac;
                             $scope.forceDownload(e.data.buf, fname);
-
-
-                        } else if (resultMode === 'asr') {
-
-                            if ($scope.wav_format) {
-                                //can only use FLAC format (not WAVE)!
-                                alert('Can only use FLAC format for speech recognition!');
-                            } else {
-                                $scope.sendASRRequest(e.data.buf);
-                            }
-
                         } else {
 
                             console.error('Unknown mode for processing STOP RECORDING event: "' + resultMode + '"!');
@@ -401,93 +388,4 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
             }
         });
     };
-
-    $scope.num = 0;
-
-    $scope.sendASRRequest = function (blob) {
-
-        function ajaxSuccess() {
-
-            var result = this.responseText;
-            console.log("AJAXSubmit - Success!"); //DEBUG
-            console.log(result);
-
-            try {
-                result = JSON.parse(result);
-                //format the result
-                result = JSON.stringify(result, null, 2);
-            } catch (exc) {
-                console.warn('Could not parse result into JSON object: "' + result + '"');
-            }
-
-            $scope.$apply(function () {
-                $scope.asr_result.text = result;
-            });
-        }
-
-        var data;
-        var sample_rate = $scope.samplerate;
-        var language = $scope.language;
-        var key = $scope._google_api_key;
-        var alternatives = $scope._asr_alternatives;
-
-
-        // use FileReader to convert Blob to base64 encoded data-URL
-        var reader = new window.FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = function () {
-            //only use base64-encoded data, i.e. remove meta-data from beginning:
-            var audioData = reader.result.replace(/^data:audio\/flac;base64,/, '');
-            data = {
-                config: {
-                    encoding: "FLAC",
-                    sampleRateHertz: sample_rate,
-                    languageCode: language,
-                    maxAlternatives: alternatives
-                },
-                audio: {
-                    content: audioData
-                }
-            };
-
-            var oAjaxReq = new XMLHttpRequest();
-
-            oAjaxReq.onload = ajaxSuccess;
-
-            //NOTE: instead of API, it is recommended to use service API authentification, 
-            //      then create an access_token (on your server, retrieve it with the client)
-            //		and set the token as access_token param
-            //			?access_token=<access_token>
-            //
-            //      or set it in the header as
-            //          Authorization: Bearer <access_token>
-            //
-            //      (see example code below)
-
-            if (!$scope.auth) {
-                $scope.auth = 'serviceKey';
-            } else if ($scope.auth !== 'apiKey') {
-                console.error('unknown authentification method: ', $scope.auth);
-            }
-
-            var params = $scope.auth === 'apiKey' ? '?key=' + key : ($scope.auth === 'serviceKey' ? '?access_token=' + key : '');
-            //DISABLED: currently Google Cloud Speech does not support authorization (headers) in combination with CORS
-            //		    if($scope.auth === 'serviceKey'){
-            //			    oAjaxReq.setRequestHeader("Authorization", "Bearer "+key);
-            //			    oAjaxReq.withCredentials = true;
-            //		    }
-            oAjaxReq.open("post", "http://127.0.0.1:5000/predict" + params, true);
-
-
-
-            oAjaxReq.setRequestHeader("Content-Type", "application/json");
-            oAjaxReq.send(JSON.stringify(data));
-        };
-
-        $scope.$apply(function () {
-            $scope.asr_result.text = "Waiting for Recognition Result...";
-        });
-
-    };
-
 }]);
