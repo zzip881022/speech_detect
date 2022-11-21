@@ -1,4 +1,7 @@
-@import url('https://rsms.me/inter/inter-ui.css');
+@font-face {
+  font-family: 'Monda-Regular';
+  src: url(Monda-Regular.ttf) format('truetype');
+}
 
 ::selection {
   background: #2D2F36;
@@ -14,7 +17,8 @@
 
 body {
   background: white;
-  font-family: 'Inter UI', sans-serif;
+  /* font-family: 'Inter UI', sans-serif; */
+  font-family: 'Monda-Regular';
   margin: 0;
 }
 
@@ -57,6 +61,7 @@ body {
   top: 20px;
   position: relative;
   width: 50%;
+  box-shadow: 0px 0px 40px 16px rgb(0 0 0 / 22%);
 }
 
 @media (max-width: 767px) {
@@ -69,16 +74,19 @@ body {
 }
 
 .login {
+  text-align: center;
   font-size: 50px;
   font-weight: 900;
   margin: 50px 40px 40px;
 }
 
 .eula {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
   color: #999;
   font-size: 14px;
   line-height: 1.5;
-  margin: 40px;
 }
 
 .right {
@@ -163,7 +171,7 @@ input::-moz-focus-inner {
 }
 
 .notRec{
-	background-color: #5161ce;
+	background-color: #497174;
   color: white;
 }
 
@@ -255,8 +263,29 @@ input::-moz-focus-inner {
 }
 
 .enroll-btn {
-  color: #999;
+  color: #898383;;
   background-color: white;
   border: none;
   cursor: pointer;
+  font-weight: 700;
 }
+
+.logo {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo_text {
+  font-size: larger;
+  margin: 10px;
+  font-weight: 700;
+}
+
+.login-word-2 {
+  color: #497174;
+}
+
