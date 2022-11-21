@@ -26,13 +26,15 @@ db.init_app(app)#初始化flask-SQLAlchemy
 #------------------------------------------------------------------------------------------------------
 
 
-file_source = 'C:/Users/Alice/Downloads/'
-file_destination = 'D:/Codes/graduate_project/speech_detect'
-enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
+# file_source = 'C:/Users/Alice/Downloads/'
+# file_destination = 'D:/Codes/graduate_project/speech_detect'
+# enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
 
-# file_source = 'C:/Users/wyes9/Downloads/'
-# file_destination = 'D:/speech_detect_web'
-# enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
+file_source = 'C:/Users/wyes9/Downloads/'
+file_destination = 'D:/speech_detect_web'
+enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
+dataset_path=Path("./static/speech_file")
+speaker_dataset, speaker_datasetV = {}, {}#語者辨識資料集變數
 
 @app.route('/')
 @app.route('/login')
