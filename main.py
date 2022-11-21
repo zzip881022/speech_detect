@@ -7,11 +7,24 @@ import time
 import subprocess
 import mimetypes
 from SpeechRecognizer import * #語者辨識function
+import pymysql #資料庫需要
+from flask_sqlalchemy import SQLAlchemy #資料庫需要
 
 mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/javascript', '.js')
 
+db = SQLAlchemy()#db宣告
+
 app = Flask(__name__)
+#---------------------------------------- 資料庫連接設定 -----------------------------------------------
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_DATABASE_URI'] = 連接方法://資料庫帳號:資料庫密碼@127.0.0.1:3306/資料庫名稱
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
+db.init_app(app)#初始化flask-SQLAlchemy
+
+#------------------------------------------------------------------------------------------------------
+
 
 file_source = 'C:/Users/wyes9/Downloads/'
 file_destination = 'D:/speech_detect_web'
@@ -138,5 +151,17 @@ def delete(folder_num, train_data_num):
         return 'delete error'
     else:
         return 'delete success'
+
+
+@app.route('/register/<register_id>/<pass_word>', methods=['POST'])
+def register(register_id,pass_word):
+    sql_cmd = """INSERT INTO user(speaker_id,user_password) VALUES (%s,%s)"""
+    tuple1 = (register_id,pass_word)
+    try:
+        query_data = db.engine.execute(sql_cmd,tuple1)
+    except:
+        return 'register error'
+    else:
+        return 'register success'
     
     
