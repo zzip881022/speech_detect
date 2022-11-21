@@ -6,6 +6,7 @@ import os
 import time
 import subprocess
 import mimetypes
+from SpeechRecognizer import * #語者辨識function
 
 mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/javascript', '.js')
@@ -15,6 +16,8 @@ app = Flask(__name__)
 file_source = 'C:/Users/wyes9/Downloads/'
 file_destination = 'D:/speech_detect_web'
 enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
+dataset_path = Path("./static/speech_file/")
+speaker_dataset, speaker_datasetV = {}, {}
 
 # file_source = 'C:/Users/wyes9/Downloads/'
 # file_destination = 'D:/speech_detect_web'
@@ -23,6 +26,25 @@ enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/fla
 @app.route('/')
 @app.route('/login')
 def home():
+    #======================================= 語者資料讀取 ====================================================
+    for db in os.listdir(dataset_path):
+        for lab in os.listdir(dataset_path / db):
+            print("Read dataset...")
+            for speaker_label in os.listdir(dataset_path / db / lab):
+                speaker_dataset[lab + speaker_label] = []
+                speaker_datasetV[lab + speaker_label] = []
+                speaker_dir = os.listdir(dataset_path / db / lab / speaker_label)
+                random.shuffle(speaker_dir)
+                flag = 0
+                for corpus in speaker_dir:
+                    signal, sample_rate = librosa.load(dataset_path / db / lab / speaker_label / corpus)
+                    corpus_feature =  preprocessing(signal, sample_rate)
+                    if flag == 3:
+                        speaker_datasetV[lab + speaker_label].append(corpus_feature)
+                    else:
+                        speaker_dataset[lab + speaker_label].append(corpus_feature)
+                        flag += 1
+    #===========================================================================================================
     return render_template('login.html')
 
 
@@ -39,6 +61,16 @@ def predict():
         audio_to_numpy_mfcc("transfer.flac")
         prediction = get_prediction()
         # data = {'prediction': prediction.item(), 'verify':verify_model, 'audio':audio_file}
+
+        #==========================================================================================================
+
+        speaker_recoginzer = SpeechRecognizer("SpeakerRecognizer", speaker_dataset)
+
+        signal, sample_rate = librosa.load("transfer.flac")
+        speaker_result=speaker_recoginzer.recognize(preprocessing(signal, sample_rate))
+        print("語者預測: ",speaker_result)
+
+        #==========================================================================================================
 
     #辨識完後刪除檔案
     try:
