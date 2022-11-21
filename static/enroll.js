@@ -23,6 +23,8 @@ var msg_box = document.getElementById('msg_box'),
 var recorderApp = angular.module('recorder', []);
 var record_times = 0; // 紀錄錄音到第幾次(共三次)
 var people_num = 0; // 紀錄第幾個人
+var password_text="Hello";//這個是最後要存進資料庫的的密碼
+
 $.ajax({
     url: "/count_people_num",
     type: 'POST',
@@ -132,16 +134,17 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
             recognizing = false;
 
         }
-        recognition.lang = "zh-TW"; //語言設定
+        // recognition.lang = "zh-TW"; //語言設定中文
+        recognition.lang = "en-US"; //英文
         //----------------------------------------------------------------
         if (recognizing) { // 如果正在辨識，則停止。
             recognition.stop();
         } else { // 否則就開始辨識
-            if (record_times>=3) {
+            if (record_times >= 3) {
                 console.log("超過三個音檔不呼叫api");
             } else {
                 final_transcript = ''; // 最終的辨識訊息變數
-                
+
                 recognition.start(); // 開始辨識
             }
         }
@@ -290,6 +293,33 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
             alert('No data. Please record first!');
         }
     }
+
+
+    registerBtn.onclick = () => {
+        if (record_times >= 3) {
+            $.ajax({
+                url: "/register/" + people_num + '/' + password_text,
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    console.log(result);
+
+                    if (result == 'register success') {
+                        alert('Register Success! Redirect to login page in few sec');
+                        setTimeout("location.href='http://127.0.0.1:5000'", 0); // 跳轉回登入頁面
+                    } else {
+                        alert('Register Error! Please submit again later!');
+                    }
+                }
+            });
+        } else {
+            alert('Please record enough data first!');
+        }
+
+
+    }
+
 
     $scope.userMediaFailed = function (code) {
         console.log('grabbing microphone failed: ' + code);
