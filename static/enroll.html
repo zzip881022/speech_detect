@@ -16,45 +16,43 @@
 </head>
 
 <body ng-controller="RecorderController">
+    <div class="logo">
+        <div class="logo_img" style="display: inline-block;">
+            <img src="logo.png" width="30" height="20">
+        </div>
+        <div class="logo_text" style="display: inline-block;">
+            <span>VASA</span>
+        </div>
+    </div>
+    <a class="home-icon" href="http://127.0.0.1:5000">
+        <i class="fa fa-home" aria-hidden="true"></i>
+    </a>
+    <hr size="2px" text-align="center" width="95%" color="#dedcdc">
     <div class="recorder_wrapper">
         <div class="recorder">
             <button class="record_btn" id="button"></button>
             <p id="msg_box"></p>
         </div>
     </div>
-    <div class="page-wrapper">
-        <div class="circle-wrapper">
-            <div class="notRec circle"></div>
-            <div class="icon">
-                <i class="fa fa-check"></i>
+    <span class="record-voice">Record your voice</span>
+    <button class="notRec circle" id="status1"></button>
+    <button class="notRec circle" id="status2"></button>
+    <button class="notRec circle" id="status3"></button>
+    <div class="replay-wrapper">
+        <button class="btn" id="replay">
+            <div class="replay-icon">
+                <i class="fa fa-play" aria-hidden="true"></i>
             </div>
-        </div>
-
-        <div class="circle-wrapper">
-            <div class="notRec circle"></div>
-            <div class="icon">
-                <i class="fa fa-check"></i>
-            </div>
-        </div>
-
-        <div class="circle-wrapper">
-            <div class="notRec circle"></div>
-            <div class="icon">
-                <i class="fa fa-check"></i>
-            </div>
-        </div>
+        </button>
     </div>
-    <div class="container">
-        <div class="col">
-            <button class="btn" id="replay">Replay last record</button>
-        </div>
-        <div class="col">
-            <button class="btn" id="reset">Reset last record</button>
+    <div class="reset-wrapper">
+        <button class="btn" id="reset">
+            <img src="retry.png" width="40" height="20">
+        </button>
     </div>
     <div class="register_container">
         <button class="uncompleted" id="register" disabled >Register</button>
     </div>
-    
 
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>

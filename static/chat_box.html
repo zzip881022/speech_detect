@@ -14,6 +14,23 @@
   <!-- partial:index.partial.html -->
   <div class="fabs">
     <div class="chat is-visible">
+      <div class="load-wrapp load-wrapp-9">
+        <div class="load-9">
+          <p>辨識中</p>
+          <div class="spinner">
+            <div class="bubble-1"></div>
+            <div class="bubble-2"></div>
+          </div>
+        </div>
+      </div>
+      <div class="load-wrapp load-wrapp-3">
+        <div class="load-3">
+          <p>請說密碼</p>
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+        </div>
+      </div>
       <div class="chat_header">
         <div class="chat_loader"></div>
         <div class="chat_option"><i class="zmdi zmdi-more-vert"></i>
@@ -29,7 +46,8 @@
             <li><span class="chat_color" style="border:solid 5px #f44336" color="red"></span></li>
           </ul>
         </div>
-        <span class="tag approved" style="align-items: center;">Uninitialized <i class="fa fa-lock" aria-hidden="true"></i></span>
+        <span class="tag uninitialized" style="align-items: center;">Uninitialized <i class="fa fa-lock"
+            aria-hidden="true"></i></span>
       </div>
       <div id="chat_converse" class="chat_converse">
         <span class="chat_msg_item chat_msg_item_admin">
@@ -49,34 +67,35 @@
         <textarea id="chatSend" name="chat_message" placeholder="Write a message"
           class="chat_field chat_message"></textarea>
       </div>
+      <div class="backdrop"></div>
     </div>
   </div>
   <div class="container">
     <div class="col">
-        <div class="row row-1">
-            <button class="btn" onclick="account_total_money()">帳戶餘額</button>
-        </div>
-        <div class="row">
-            <button class="btn" onclick="account_available_balance()">可用餘額</button>
-        </div>
+      <div class="row row-1">
+        <button class="btn account_total_money">帳戶餘額</button>
+      </div>
+      <div class="row">
+        <button class="btn account_available_balance">可用餘額</button>
+      </div>
     </div>
     <div class="col">
-        <div class="row row-1">
-            <button class="btn" onclick="agreed_wire_transfer()">約定轉帳</button>
-        </div>
-        <div class="row">
-            <button class="btn" onclick="regular_wire_transfer()">非約定轉帳</button>
-        </div>
+      <div class="row row-1">
+        <button class="btn agreed_wire_transfer">約定轉帳</button>
+      </div>
+      <div class="row">
+        <button class="btn regular_wire_transfer">非約定轉帳</button>
+      </div>
     </div>
     <div class="col col-3">
-        <div class="row row-1">
-            <button class="btn" onclick="account_transaction_record()">交易紀錄</button>
-        </div>
-        <div class="row">
-            <button class="btn" onclick="share_account_imformation()">分享帳號</button>
-        </div>
+      <div class="row row-1">
+        <button class="btn account_transaction_record">交易紀錄</button>
+      </div>
+      <div class="row">
+        <button class="btn share_account_imformation">分享帳號</button>
+      </div>
     </div>
-</div>
+  </div>
   <!-- partial -->
   <script src='http://code.jquery.com/jquery-1.11.3.min.js?efe'></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>

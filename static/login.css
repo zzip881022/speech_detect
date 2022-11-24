@@ -178,8 +178,8 @@ input::-moz-focus-inner {
 .Rec{
 	animation-name: pulse;
 	animation-duration: 1.5s;
-  background-color: white;
-  color: red;
+  background-color: #EB6440;
+  color: white;
 	animation-iteration-count: infinite;
 	animation-timing-function: linear;
 }
@@ -244,11 +244,11 @@ input::-moz-focus-inner {
 }
 
 .verify_success {
-  background-color: #52f792;
+  background-color: #94d8bb;
 }
 
 .verify_failed {
-  background-color: #f80a0a;
+  background-color: #ed795a;
 }
 
 #identify {
@@ -259,7 +259,7 @@ input::-moz-focus-inner {
 
 #modal_icon {
   position: absolute;
-  top: 45%;
+  top: 48%;
 }
 
 .enroll-btn {

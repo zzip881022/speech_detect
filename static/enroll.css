@@ -4,16 +4,15 @@
     outline: none;
 }
 
-body {
-    margin: 0;
+@font-face {
+    font-family: 'Monda-Regular';
+    src: url(Monda-Regular.ttf) format('truetype');
 }
 
-.circle-wrapper {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    float: left;
-    margin: 15px;
+
+body {
+    margin: 0;
+    font-family: 'Monda-Regular';
 }
 
 .icon {
@@ -25,28 +24,50 @@ body {
     transform: translate(-50%, -50%);
 }
 
+.status-wrapper {
+    display: inline;
+    position: absolute;
+    top: 95%;
+    left: 85%;
+}
+
 .circle {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    padding: 2.5px;
-    background-clip: content-box;
+    display: inline-block;
+    font-size: 40px;
+    width: 110px;
+    height: 25px;
+    border-radius: 15px;
+    border: none;
+    background-color: white;
+}
+
+#status1 {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+}
+#status2 {
+    position: absolute;
+    top: 55%;
+    left: 60%;
+}
+#status3 {
+    position: absolute;
+    top: 55%;
+    left: 70%;
 }
 
 .notRec {
     background-color: #dedcdc;
-    border: 2.5px dashed #dedcdc;
 }
 
 .Rec {
-    background-color: #12e12a;
-    border: 2.5px dashed #12e12a;
+    background-color: #6d9886;
 }
 
 .page-wrapper {
     position: absolute;
-    top: 22%;
+    top: 50%;
     right: 27%;
     width: 30%;
     display: flex;
@@ -56,8 +77,8 @@ body {
 
 .recorder_wrapper {
     position: absolute;
-    top: 15%;
-    left: 10%;
+    top: 25%;
+    left: 5%;
     display: -webkit-flex;
     display: -moz-flex;
     display: -ms-flex;
@@ -81,12 +102,13 @@ body {
     height: 300px;
     font-family: 'Material Icons';
     font-size: 96px;
-    color: #e74c3c;
-    background: none;
-    border: 2px solid #e74c3c;
+    color: white;
+    background: #6d9886;
+    border: none;
     border-radius: 50%;
     cursor: pointer;
     transition: 0.15s linear;
+    box-shadow: 0px 0px 40px 5px rgb(0 0 0 / 22%);
 }
 
 .record_btn:hover {
@@ -195,29 +217,21 @@ body {
     grid-template-rows: 80px 80px;
 }
 
-.btn {
-    font-weight: 900;
-    font-size: 20px;
-    width: 80%;
-    height: 80%;
-    cursor: pointer;
-    border: 1px solid;
-    border-color: #574da4;
-    background-color: white;
-    color: #574da4;
-}
-
 .register_container {
     position: absolute;
-    left: 400px;
-    top: 20px;
+    top: 75%;
+    left: 65%;
 }
 
 #register {
-    width: 100px;
-    height: 80px;
-    border-radius: 5px;
-    border: 1px solid;
+    font-size: 25px;
+    width: 160px;
+    height: 50px;
+    border-radius: 15px;
+    border: none;
+    color: white;
+    background-color: #6d9886;
+    box-shadow: 0px 0px 40px 5px rgb(0 0 0 / 22%);
 }
 
 .completed {
@@ -236,4 +250,84 @@ body {
 
 .col {
     margin-bottom: 20px;
+}
+
+
+.logo {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo_text {
+    font-size: larger;
+    margin: 10px;
+    font-weight: 700;
+}
+
+.login-word-2 {
+    color: #497174;
+}
+
+hr {
+    position: relative;
+    top: 80px;
+}
+
+.replay-wrapper {
+    position: absolute;
+    top: 70%;
+    left: 34%;
+}
+
+#replay {
+    width: 100px;
+    height: 100px;
+    font-family: 'Material Icons';
+    font-size: 96px;
+    color: white;
+    background: #EB6440;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.15s linear;
+    box-shadow: 0px 0px 40px 5px rgb(0 0 0 / 22%);
+}
+
+.replay-icon {
+    font-size: 40px;
+}
+
+.home-icon {
+    position: absolute;
+    top: 35px;
+    right: 45px;
+    color: #dedcdc;
+    font-size: 35px;
+    cursor: pointer;
+}
+
+.record-voice {
+    font-size: 30px;
+    font-weight: 500;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+}
+
+#reset {
+    font-size: 5px;
+    width: 80px;
+    height: 30px;
+    border-radius: 15px;
+    border: none;
+    background-color: white;
+    box-shadow: 0px 0px 40px 5px rgb(0 0 0 / 22%);
+    position: absolute;
+    top: 55%;
+    left: 85%;
+    cursor: pointer;
 }
