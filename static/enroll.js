@@ -23,7 +23,14 @@ var msg_box = document.getElementById('msg_box'),
 var recorderApp = angular.module('recorder', []);
 var record_times = 0; // 紀錄錄音到第幾次(共三次)
 var people_num = 0; // 紀錄第幾個人
-var password_text="Hello";//這個是最後要存進資料庫的的密碼
+var password_text = "Hello"; //這個是最後要存進資料庫的的密碼
+
+var this_text = 'init';
+var last_text = 'init';
+var detect_result = '初始';
+var start_time;
+var end_time;
+
 
 $.ajax({
     url: "/count_people_num",
@@ -103,42 +110,69 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
     //---------------------- google api 需要的變數 ------------------------
     var final_transcript = ''; // 最終的辨識訊息的變數
     var recognizing = false; // 是否辨識中
+    //-------------- speech-to-text function setting -----------------
+    var recognition = new webkitSpeechRecognition();
 
     //--------------------------------------------------------------------
 
+    recognition.onstart = function () { // 設定開始辨識時會執行的code
+        recognizing = true; // 狀態設定為辨識中
+        console.log('開始api文字辨識...');
+        detect_result = '等待辨識';
+
+    };
+
+    recognition.onend = function () { // 設定辨識完成時執行的code
+        recognizing = false; // 狀態設定為「非辨識中」
+        //detect_result = '辨識結束';
+        console.log('結束api文字辨識...');
+
+    };
+
+    recognition.onresult = function (event) { //有辨識結果時
+        var text = event.results[0][0].transcript;
+
+        last_text = this_text;
+        final_transcript = text;
+        this_text = final_transcript;
+
+        console.log("有結果" + "last:" + last_text + " this:" + this_text);
+
+        detect_result = '辨識結果';
+
+    }
+
+    recognition.onerror = function (event) {
+        console.error(event);
+        console.log("結果出error");
+        detect_result = '辨識錯誤';
+        recognition.stop()
+
+        recognizing = false;
+
+    }
+
+    recognition.onnomatch = () => function (event) {
+        console.error(event);
+        console.log("結果出error");
+        detect_result = '辨識錯誤';
+
+    }
+
+
+    // recognition.lang = "zh-TW"; //語言設定中文
+    recognition.lang = "en-US"; //英文
+    recognition.continuous = false;
+    //----------------------------------------------------------------
+
+
+
+
     recordBtn.onclick = () => {
 
-        //-------------- speech-to-text function setting -----------------
-        var recognition = new webkitSpeechRecognition();
-
-        recognition.onstart = function () { // 設定開始辨識時會執行的code
-            recognizing = true; // 狀態設定為辨識中
-            console.log('開始api文字辨識...');
-        };
-
-        recognition.onend = function () { // 設定辨識完成時執行的code
-            recognizing = false; // 狀態設定為「非辨識中」
-            console.log('結束api文字辨識...');
-        };
-
-        recognition.onresult = function (event) { //有辨識結果時
-            var text = event.results[0][0].transcript;
-            final_transcript = text;
-            console.log(final_transcript);
-        }
-
-        recognition.onerror = function (event) {
-            console.error(event);
-            recognition.stop()
-
-            recognizing = false;
-
-        }
-        // recognition.lang = "zh-TW"; //語言設定中文
-        recognition.lang = "en-US"; //英文
-        //----------------------------------------------------------------
         if (recognizing) { // 如果正在辨識，則停止。
             recognition.stop();
+            start_time = new Date().getTime();
         } else { // 否則就開始辨識
             if (record_times >= 3) {
                 console.log("超過三個音檔不呼叫api");
@@ -217,7 +251,167 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
                         if (resultMode === 'file') {
 
                             var fname = $scope.wav_format ? $scope.outfilename_wav : $scope.outfilename_flac;
+
                             $scope.forceDownload(e.data.buf, fname);
+
+                            setTimeout(function () {
+                                while (detect_result == '等待辨識' || detect_result == '辨識錯誤' || detect_result == '辨識結果') {
+                                    //console.log("狀態:" + detect_result + (end_time - start_time));
+
+                                    if (detect_result == '等待辨識') {
+                                        alert("Empty text,please record again!");
+                                        $.ajax({
+                                            url: "/delete/" + people_num + '/' + record_times,
+                                            type: 'POST',
+                                            processData: false,
+                                            contentType: false,
+                                            success: function (result) {
+                                                console.log(result);
+                                                if (result == 'delete success') { // 避免還沒加入到目錄中就被 reset 而造成 error
+                                                    if (record_times == 3) {
+                                                        registerBtn.classList.remove('completed');
+                                                        registerBtn.classList.add('uncompleted');
+                                                        registerBtn.disabled = true;
+                                                    }
+                                                    record_times--;
+
+                                                    check[record_times].classList.remove('Rec');
+                                                    check[record_times].classList.add('notRec');
+                                                    msg_box.innerHTML = hint[record_times];
+                                                } else {
+                                                    alert('Reset mistake! Please try it later.');
+                                                }
+                                            }
+                                        });
+                                        this_text = last_text;
+                                        detect_result = '錯誤解決';
+                                    }
+
+
+                                    if (detect_result == '辨識錯誤') {
+                                        alert("Fail to recongnize text,please record again!");
+                                        //reset 這個音檔
+                                        $.ajax({
+                                            url: "/delete/" + people_num + '/' + record_times,
+                                            type: 'POST',
+                                            processData: false,
+                                            contentType: false,
+                                            success: function (result) {
+                                                console.log(result);
+                                                if (result == 'delete success') { // 避免還沒加入到目錄中就被 reset 而造成 error
+                                                    if (record_times == 3) {
+                                                        registerBtn.classList.remove('completed');
+                                                        registerBtn.classList.add('uncompleted');
+                                                        registerBtn.disabled = true;
+                                                    }
+                                                    record_times--;
+
+                                                    check[record_times].classList.remove('Rec');
+                                                    check[record_times].classList.add('notRec');
+                                                    msg_box.innerHTML = hint[record_times];
+                                                } else {
+                                                    alert('Reset mistake! Please try it later.');
+                                                }
+                                            }
+                                        });
+                                        this_text = last_text;
+                                        detect_result = '錯誤已解決';
+
+                                    } else if (detect_result == '辨識結果') {
+
+                                        if (record_times > 1) {
+                                            if (check_text(last_text, this_text) == '0') {
+                                                //reset，this_text=last_text
+                                                
+                                                console.log("people:"+people_num+"record_times:"+record_times);
+                                                setTimeout(function() { 
+                                                    $.ajax({
+                                                        url: "/delete/" + people_num + '/' + record_times,
+                                                        type: 'POST',
+                                                        processData: false,
+                                                        contentType: false,
+                                                        success: function (result) {
+                                                            console.log(result);
+    
+                                                            if (result == 'delete success') { // 避免還沒加入到目錄中就被 reset 而造成 error
+                                                                if (record_times == 3) {
+                                                                    registerBtn.classList.remove('completed');
+                                                                    registerBtn.classList.add('uncompleted');
+                                                                    registerBtn.disabled = true;
+                                                                }
+                                                                record_times--;
+    
+    
+                                                                check[record_times].classList.remove('Rec');
+                                                                check[record_times].classList.add('notRec');
+                                                                msg_box.innerHTML = hint[record_times];
+                                                            } else {
+                                                                alert('Reset mistake! Please try it later.');
+                                                            }
+                                                        }
+                                                    });
+                                                    
+                                                }, 1000)
+                                                
+                                                this_text = last_text;
+                                                detect_result = '已判斷';
+                                                alert("Password seems different,record again please!");
+                                            }
+                                            else
+                                            {
+                                                detect_result = '已判斷';
+                                            }
+                                        } else {
+                                            if (this_text != '' || this_text != 'init') {
+                                                detect_result = '已判斷';
+                                            } else {
+                                                
+                                                setTimeout(function() { 
+                                                    $.ajax({
+                                                        url: "/delete/" + people_num + '/' + record_times,
+                                                        type: 'POST',
+                                                        processData: false,
+                                                        contentType: false,
+                                                        success: function (result) {
+                                                            console.log(result);
+    
+                                                            if (result == 'delete success') { // 避免還沒加入到目錄中就被 reset 而造成 error
+                                                                if (record_times == 3) {
+                                                                    registerBtn.classList.remove('completed');
+                                                                    registerBtn.classList.add('uncompleted');
+                                                                    registerBtn.disabled = true;
+                                                                }
+                                                                record_times--;
+    
+    
+                                                                check[record_times].classList.remove('Rec');
+                                                                check[record_times].classList.add('notRec');
+                                                                msg_box.innerHTML = hint[record_times];
+                                                            } else {
+                                                                alert('Reset mistake! Please try it later.');
+                                                            }
+                                                        }
+                                                    });
+                                                    
+                                                }, 1000)
+
+                                                this_text = last_text;
+                                                detect_result = '已判斷';
+                                                alert("Fail to recongnize text ,Please record agin!");
+                                            }
+                                        }
+
+
+                                    }
+
+                                }
+
+                            }, 2000);
+
+
+
+
+
                         } else {
 
                             console.error('Unknown mode for processing STOP RECORDING event: "' + resultMode + '"!');
@@ -256,6 +450,18 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         }
     };
 
+    function check_text(last_t, this_t) {
+        
+        if (last_t == this_t && last_t != 'init' && this_t != '') {
+            console.log('check correct' + 'last:' + last_t + ' this:' + this_t);
+            return '1';
+        } else {
+            console.log('check error' + 'last:' + last_t + ' this:' + this_t);
+            return '0';
+        }
+    }
+
+
     resetBtn.onclick = () => {
         $.ajax({
             url: "/delete/" + people_num + '/' + record_times,
@@ -272,7 +478,9 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
                         registerBtn.disabled = true;
                     }
                     record_times--;
-                    console.log('record_times = ' + record_times);
+
+                    this_text = last_text;
+
                     check[record_times].classList.remove('Rec');
                     check[record_times].classList.add('notRec');
                     msg_box.innerHTML = hint[record_times];
