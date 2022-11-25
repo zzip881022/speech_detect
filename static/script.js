@@ -416,13 +416,14 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
   //User msg
   function userSend(text) {
-
+    var functionExist = false;
     console.log("!!!!!!!!!!!!!!!!");
 
     if (text != '') {
       // 跟快捷功能一樣才需要語音輸入密碼
       for (let i = 0; i < functions.length; i++) {
         if (text === functions[i]) {
+          functionExist = true;
           // show load wrapp
           load_wrapp_microfone.style.opacity = "1";
           load_wrapp_microfone.style.visibility = "visible";
@@ -435,16 +436,21 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         }
       }
 
-      recording();
-
-
       var img = '<i class="zmdi zmdi-account"></i>';
       $('#chat_converse').append('<div class="chat_msg_item chat_msg_item_user"><div class="chat_avatar">' + img + '</div>' + text + '</div>');
       $('#chatSend').val('');
       if ($('.chat_converse').height() >= 256) {
         $('.chat_converse').addClass('is-max');
+        $('.chat_converse').scrollTop($('.chat_converse')[0].scrollHeight);
       }
-      $('.chat_converse').scrollTop($('.chat_converse')[0].scrollHeight);
+
+      if (functionExist) {
+        recording();
+      }
+      else {
+        adminSend('功能不存在');
+      }
+
     } else {
       alert('輸入為空! 請重新輸入');
     }
@@ -474,6 +480,9 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
     else if (text == '權限不足') {
       response = '很抱歉，您的權限未通過';
     }
+    else if (text == '功能不存在') {
+      response = '很抱歉目前沒有此功能，可以試試看其他功能優!';
+    }
     else {
       response = '尼剛剛說的密碼為: ' + password;
     }
@@ -489,12 +498,12 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
   //Send input using enter and send key
   $('#chatSend').bind("enterChat", function (e) {
     userSend($('#chatSend').val());
-    adminSend($('#chatSend').val());
+    // adminSend($('#chatSend').val());
     command = $('#chatSend').val();
   });
   $('#fab_send').bind("enterChat", function (e) {
     userSend($('#chatSend').val());
-    adminSend($('#chatSend').val());
+    // adminSend($('#chatSend').val());
     command = $('#fab_send').val();
   });
   $('#chatSend').keypress(function (event) {

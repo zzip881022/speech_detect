@@ -190,6 +190,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
             if (record_times < 3) {
                 check[record_times].classList.remove('notRec');
                 check[record_times].classList.add('Rec');
+                console.log('record_times = ' + record_times);
                 record_times++;
                 msg_box.innerHTML = hint[record_times];
 
@@ -495,7 +496,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         if (record_times > 0) {
             const audio = document.createElement("audio");
             audio.src = "speech_file/recording/flac/" + people_num + '/train' + record_times + '.flac';
-            console.log('播放音源位置 = ' + audio.src);
+            console.log('record_times = ' + record_times);
             audio.play().catch(function () {
                 alert('Replay mistake! Please try it later.');
             });
