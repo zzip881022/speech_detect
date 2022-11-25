@@ -250,6 +250,17 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
     //=====錄語音傳去側錄模型辨識結果========
 
     if (startRecord == false) {
+      // 開始錄之前先檢查有沒有 output.flac、transfer.flac，有的話就刪除
+			$.ajax({
+				url: "/check_before_record",
+				type: 'POST',
+				processData: false,
+				contentType: false,
+				success: function (result) {
+					console.log(result);
+				}
+			});
+
       // 開始錄音
       console.log("錄音中...");
       startRecord = true;
