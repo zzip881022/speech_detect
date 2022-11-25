@@ -453,6 +453,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         
         if (last_t == this_t && last_t != 'init' && this_t != '') {
             console.log('check correct' + 'last:' + last_t + ' this:' + this_t);
+            password_text=this_t;
             return '1';
         } else {
             console.log('check error' + 'last:' + last_t + ' this:' + this_t);
