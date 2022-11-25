@@ -230,12 +230,16 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         var backdrop = document.getElementsByClassName("backdrop")[0];
         backdrop.style.opacity = "0";
         backdrop.style.visibility = "hidden";
-        if (result == '1') {
+
+        var resultArray = new Array();//用來接收真假語音判斷和密碼的結果
+				resultArray = result.split("/");//resultArray[0]是真假音判斷，resultArray[1]是密碼文字
+
+        if (resultArray[0] == '1'&& resultArray[1].toUpperCase()==password.toUpperCase()) {
           tag.classList.remove("rejected");
           tag.classList.add("approved");
           tag.innerHTML = 'Authorized   <i class="fa fa-unlock-alt" aria-hidden="true"></i>';
           adminSend(password);
-        } else if (result == '0') {
+        } else if (resultArray[0] == '0'||resultArray[1].toUpperCase()!=password.toUpperCase()) {
           tag.classList.remove("approved");
           tag.classList.add("rejected");
           tag.innerHTML = 'Unauthorized <i class="fa fa-lock" aria-hidden="true"></i>';
