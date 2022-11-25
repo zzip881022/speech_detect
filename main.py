@@ -96,11 +96,13 @@ def predict():
 
         tuple1 = speaker_id
         try:
-            query_data = db.engine.execute(sql_cmd,tuple1).fetchone()
+            query_data = db.engine.execute(sql_cmd,tuple1).fetchone()#查詢出來會是找到的第一筆的tuple
         except:
-            print('register error')
+            print('serch error')
         else:
-            print(query_data)
+            print(query_data[0])#查詢結果以字串形式印出
+
+        
 
         #==========================================================================================================
         
@@ -115,7 +117,7 @@ def predict():
     else:
         print("File is deleted successfully")
 
-    return prediction
+    return str(prediction)+'/'+query_data[0]
 
     # return render_template('predict.html', data=('虛假語音','真實語音')[prediction.item()==1])
 

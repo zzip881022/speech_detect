@@ -72,7 +72,76 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
 	};
 
+
+
+	//---------------------- google api 需要的變數 ------------------------
+	var final_transcript = ''; // 最終的辨識訊息的變數
+	var recognizing = false; // 是否辨識中
+	var detect_result = '初始';
+
+	//-------------- speech-to-text function setting -----------------
+	var recognition = new webkitSpeechRecognition();
+
+	//--------------------------------------------------------------------
+
+	recognition.onstart = function () { // 設定開始辨識時會執行的code
+		recognizing = true; // 狀態設定為辨識中
+		console.log('開始api文字辨識...');
+		detect_result = '等待辨識';
+
+	};
+
+	recognition.onend = function () { // 設定辨識完成時執行的code
+		recognizing = false; // 狀態設定為「非辨識中」
+		console.log('結束api文字辨識...');
+
+	};
+
+	recognition.onresult = function (event) { //有辨識結果時
+		var text = event.results[0][0].transcript;
+		final_transcript = text;
+
+
+		console.log("有結果 " + final_transcript);
+
+		detect_result = '辨識結果';
+
+	}
+
+	recognition.onerror = function (event) {
+		console.error(event);
+		console.log("結果出error");
+		detect_result = '辨識錯誤';
+		recognition.stop()
+
+		recognizing = false;
+
+	}
+
+	recognition.onnomatch = () => function (event) {
+		console.log("結果出error");
+		detect_result = '辨識錯誤';
+
+	}
+
+
+	// recognition.lang = "zh-TW"; //語言設定中文
+	recognition.lang = "en-US"; //英文
+	recognition.continuous = false;
+	//----------------------------------------------------------------
+
 	recordBtn.onclick = () => {
+
+		if (recognizing) { // 如果正在辨識，則停止。
+			recognition.stop();
+		} else { // 否則就開始辨識
+
+			final_transcript = ''; // 最終的辨識訊息變數
+			recognition.start(); // 開始辨識
+
+		}
+		//----------------------------------------------------------------
+
 		if ($scope.recording === true) {
 			// show the modal
 			modal.style.visibility = "visible";
@@ -298,7 +367,10 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			contentType: false,
 			success: function (result) {
 				console.log(result);
-				if (result == '1') {
+				var resultArray = new Array();//用來接收真假語音判斷和密碼的結果
+				resultArray = result.split("/");//resultArray[0]是真假音判斷，resultArray[1]是密碼文字
+
+				if (resultArray[0] == '1'&& resultArray[1].toUpperCase()==final_transcript.toUpperCase()) {
 					// show the success modal
 					modal.classList.remove("verifying");
 					modal.classList.add("verify_success");
@@ -309,7 +381,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 					modal_status.style.color = 'white';
 
 					setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
-				} else if (result == '0') {
+				} else if (resultArray[0] == '0'||resultArray[1].toUpperCase()!=final_transcript.toUpperCase()) {
 					// show the failed modal
 					modal.classList.remove("verifying");
 					modal.classList.add("verify_failed");
