@@ -132,17 +132,10 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
 	recordBtn.onclick = () => {
 
-		if (recognizing) { // 如果正在辨識，則停止。
-			recognition.stop();
-		} else { // 否則就開始辨識
-
-			final_transcript = ''; // 最終的辨識訊息變數
-			recognition.start(); // 開始辨識
-
-		}
 		//----------------------------------------------------------------
 
 		if ($scope.recording === true) {
+
 			// show the modal
 			modal.style.visibility = "visible";
 			modal.style.opacity = "1";
@@ -177,6 +170,9 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			$scope.node.disconnect();
 			$scope.input = $scope.node = null;
 		} else {
+			// 開始辨識密碼
+			final_transcript = ''; // 最終的辨識訊息變數
+			recognition.start(); // 開始辨識
 
 			// 開始錄之前先檢查有沒有 output.flac、transfer.flac，有的話就刪除
 			$.ajax({

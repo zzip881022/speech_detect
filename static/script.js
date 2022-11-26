@@ -270,7 +270,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
       startRecord = true;
       console.log("startRecord: ", startRecord);
 
-      $scope.encoder = new Worker('encoder.js?dwdw');
+      $scope.encoder = new Worker('static/encoder.js?dwdw');
 
       if ($scope.wav_format == true) {
         $scope.encoder.postMessage({

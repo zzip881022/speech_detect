@@ -20,21 +20,21 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_DATABASE_URI'] = 連接方法://資料庫帳號:資料庫密碼@127.0.0.1:3306/資料庫名稱
-# app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:jo891202@127.0.0.1:3306/speech"
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:jo891202@127.0.0.1:3306/speech"
 # app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
 db.init_app(app)#初始化flask-SQLAlchemy
 
 # ------------------------------------------------------------------------------------------------------
 
 
-# file_source = 'C:/Users/Alice/Downloads/'
-# file_destination = 'D:/Codes/graduate_project/speech_detect'
-# enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
+file_source = 'C:/Users/Alice/Downloads/'
+file_destination = 'D:/Codes/graduate_project/speech_detect'
+enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
 
-file_source = 'C:/Users/wyes9/Downloads/'
-file_destination = 'D:/speech_detect_web'
-enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
+# file_source = 'C:/Users/wyes9/Downloads/'
+# file_destination = 'D:/speech_detect_web'
+# enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
 dataset_path=Path("./static/speech_file")
 speaker_dataset, speaker_datasetV = {}, {}#語者辨識資料集變數
 
@@ -117,7 +117,7 @@ def predict():
     else:
         print("File is deleted successfully")
 
-    return str(prediction)+'/'+query_data[0]
+    return str(prediction)+'/'+query_data[0] +'/'+speaker_id
 
     # return render_template('predict.html', data=('虛假語音','真實語音')[prediction.item()==1])
 
@@ -131,7 +131,7 @@ def predict():
 
 @app.route('/chat')
 def chat():
-    return render_template('chat.html')
+    return render_template('chat_box.html')
 
 
 @app.route('/moveto/<folder_num>/<train_data_num>', methods=['POST'])
