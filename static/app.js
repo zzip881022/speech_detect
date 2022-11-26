@@ -196,7 +196,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
 			console.log('start recording'); //DEBUG
 
-			$scope.encoder = new Worker('static/encoder.js?dwdw');
+			$scope.encoder = new Worker('static/encoder.js?dwdwffrf');
 
 			if ($scope.wav_format == true) {
 				$scope.encoder.postMessage({
@@ -237,6 +237,19 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 				} else if (e.data.cmd == 'debug') {
 
 					console.log(e.data);
+
+				} else if (e.data.cmd === 'not-init') {
+
+					// show the modal
+					modal.style.visibility = "hidden";
+					modal.style.opacity = "0";
+
+					// show backdrop effect
+					var backdrop = document.getElementsByClassName("backdrop")[0];
+					backdrop.style.opacity = "0";
+					backdrop.style.visibility = "hidden";
+
+					alert('Error! Try it again');
 
 				} else {
 
@@ -363,10 +376,10 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			contentType: false,
 			success: function (result) {
 				console.log(result);
-				var resultArray = new Array();//用來接收真假語音判斷和密碼的結果
-				resultArray = result.split("/");//resultArray[0]是真假音判斷，resultArray[1]是密碼文字
+				var resultArray = new Array(); //用來接收真假語音判斷和密碼的結果
+				resultArray = result.split("/"); //resultArray[0]是真假音判斷，resultArray[1]是密碼文字
 
-				if (resultArray[0] == '1'&& resultArray[1].toUpperCase()==final_transcript.toUpperCase()) {
+				if (resultArray[0] == '1' && resultArray[1].toUpperCase() == final_transcript.toUpperCase()) {
 					// show the success modal
 					modal.classList.remove("verifying");
 					modal.classList.add("verify_success");
@@ -377,7 +390,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 					modal_status.style.color = 'white';
 
 					setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
-				} else if (resultArray[0] == '0'||resultArray[1].toUpperCase()!=final_transcript.toUpperCase()) {
+				} else if (resultArray[0] == '0' || resultArray[1].toUpperCase() != final_transcript.toUpperCase()) {
 					// show the failed modal
 					modal.classList.remove("verifying");
 					modal.classList.add("verify_failed");

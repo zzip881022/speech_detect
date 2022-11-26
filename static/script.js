@@ -312,7 +312,20 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
           console.log(e.data);
 
-        } else {
+        } else if (e.data.cmd === 'not-init') {
+
+					// close load wrapp
+          load_wrapp_identify.style.opacity = "0";
+          load_wrapp_identify.style.visibility = "hidden";
+
+					// show backdrop effect
+					var backdrop = document.getElementsByClassName("backdrop")[0];
+					backdrop.style.opacity = "0";
+					backdrop.style.visibility = "hidden";
+
+					alert('Error! Try it again');
+
+				} else {
 
           console.error('Unknown event from encoder (WebWorker): "' + e.data.cmd + '"!');
         }

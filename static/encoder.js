@@ -130,6 +130,7 @@ self.onmessage = function(e) {
 			
 			if(!Flac.isReady()){
 				
+				self.postMessage({cmd: 'not-init'});
 				console.error('Flac was not initialized: could not encode data!');
 				
 			} else {
