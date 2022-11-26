@@ -359,6 +359,9 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 		// formData.append('audio_file', blob);
 		formData.append('audio_file', 'output.flac');
 
+		check_session = 0;
+
+
 		$.ajax({
 			url: "/predict",
 			type: 'POST',
@@ -367,10 +370,9 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			contentType: false,
 			success: function (result) {
 				console.log(result);
-				var resultArray = new Array();//用來接收真假語音判斷和密碼的結果
-				resultArray = result.split("/");//resultArray[0]是真假音判斷，resultArray[1]是密碼文字
-
-				if (resultArray[0] == '1'&& resultArray[1].toUpperCase()==final_transcript.toUpperCase()) {
+				var resultArray = new Array(); //用來接收真假語音判斷和密碼的結果
+				resultArray = result.split("/"); //resultArray[0]是真假音判斷，resultArray[1]是密碼文字，resultArray[2]是語者編號
+				if (resultArray[0] == '1' && resultArray[1].toUpperCase() == final_transcript.toUpperCase()) {
 					// show the success modal
 					modal.classList.remove("verifying");
 					modal.classList.add("verify_success");
@@ -380,8 +382,26 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 					modal_status.innerHTML = "Success";
 					modal_status.style.color = 'white';
 
-					setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
-				} else if (resultArray[0] == '0'||resultArray[1].toUpperCase()!=final_transcript.toUpperCase()) {
+
+					//------ 設定session保存語者編號 ------------
+					$.ajax({
+						url: "/login/" + resultArray[2],
+						type: 'POST',
+						processData: false,
+						contentType: false,
+						success: function (result) {
+
+							console.log("login success");
+							setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
+
+						}
+
+					});
+					//------------------------------------------
+
+
+
+				} else if (resultArray[0] == '0' || resultArray[1].toUpperCase() != final_transcript.toUpperCase()) {
 					// show the failed modal
 					modal.classList.remove("verifying");
 					modal.classList.add("verify_failed");

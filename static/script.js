@@ -12,9 +12,21 @@ var tag = document.querySelector(".tag");
 var startRecord = false;
 var functions = ['帳戶餘額', '可用餘額', '約定轉帳', '非約定轉帳', '交易紀錄', '分享帳號'];
 var command = ''; // 用來存使用者想要的 function
-var password = '';  // 用來存使用者講出的密碼
+var password = ''; // 用來存使用者講出的密碼
+var speaker_id = '';
 
 
+var session_id='x';
+$.ajax({
+  url: "/getID",
+  type: 'POST',
+  processData: false,
+  contentType: false,
+  success: function (result) {
+    session_id=result;
+    console.log("session_id ajax:"+session_id)
+  }
+});
 
 
 recorderApp.controller('RecorderController', ['$scope', function ($scope) {
@@ -214,6 +226,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
     // formData.append('audio_file', blob);
     formData.append('audio_file', 'output.flac');
 
+
     $.ajax({
       url: "/predict",
       type: 'POST',
@@ -231,15 +244,20 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         backdrop.style.opacity = "0";
         backdrop.style.visibility = "hidden";
 
-        var resultArray = new Array();//用來接收真假語音判斷和密碼的結果
-				resultArray = result.split("/");//resultArray[0]是真假音判斷，resultArray[1]是密碼文字
+        var resultArray = new Array(); //用來接收真假語音判斷和密碼的結果
+        resultArray = result.split("/"); //resultArray[0]是真假音判斷，resultArray[1]是密碼文字，resultArray[2]是語者辨識
 
-        if (resultArray[0] == '1'&& resultArray[1].toUpperCase()==password.toUpperCase()) {
+
+
+        
+        console.log('session_id:'+session_id+" resultArray[2]: "+resultArray[2]+" 真假音判斷:"+resultArray[0]+" password now:"+password);
+
+        if (resultArray[0] == '1' && resultArray[1].toUpperCase() == password.toUpperCase() && session_id==resultArray[2]) {
           tag.classList.remove("rejected");
           tag.classList.add("approved");
           tag.innerHTML = 'Authorized   <i class="fa fa-unlock-alt" aria-hidden="true"></i>';
           adminSend(password);
-        } else if (resultArray[0] == '0'||resultArray[1].toUpperCase()!=password.toUpperCase()) {
+        } else if (resultArray[0] == '0' || resultArray[1].toUpperCase() != password.toUpperCase()||session_id!=resultArray[2]) {
           tag.classList.remove("approved");
           tag.classList.add("rejected");
           tag.innerHTML = 'Unauthorized <i class="fa fa-lock" aria-hidden="true"></i>';
@@ -255,15 +273,15 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
     if (startRecord == false) {
       // 開始錄之前先檢查有沒有 output.flac、transfer.flac，有的話就刪除
-			$.ajax({
-				url: "/check_before_record",
-				type: 'POST',
-				processData: false,
-				contentType: false,
-				success: function (result) {
-					console.log(result);
-				}
-			});
+      $.ajax({
+        url: "/check_before_record",
+        type: 'POST',
+        processData: false,
+        contentType: false,
+        success: function (result) {
+          console.log(result);
+        }
+      });
 
       // 開始錄音
       console.log("錄音中...");
@@ -335,7 +353,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         }, $scope.gotUserMedia, $scope.userMediaFailed);
 
 
-    //==========密碼辨識===============================================================================
+      //==========密碼辨識===============================================================================
 
       var recognition = new webkitSpeechRecognition();
 
@@ -388,11 +406,11 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
       }
 
       // recognition.continuous = true;
-      recognition.lang = "zh-TW";
+      recognition.lang = "en-US";
       recognition.interimResults = true;
       recognition.start();
 
-    //=========================================================================================
+      //=========================================================================================
 
     } else {
       // 停止錄音
@@ -461,8 +479,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
       if (functionExist) {
         recording();
-      }
-      else {
+      } else {
         adminSend('功能不存在');
       }
 
@@ -471,34 +488,28 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
     }
   }
 
+
   //Admin msg
   function adminSend(text) {
     var response = '';
     if (text == '帳戶餘額') {
+
       response = '您的帳戶餘額為...';
-    } 
-    else if (text == '可用餘額') {
+    } else if (text == '可用餘額') {
       response = '您的可用餘額為...';
-    }
-    else if (text == '約定轉帳') {
+    } else if (text == '約定轉帳') {
       response = '約定轉帳給...';
-    } 
-    else if (text == '非約定轉帳') {
+    } else if (text == '非約定轉帳') {
       response = '非約定轉帳給...';
-    } 
-    else if (text == '交易紀錄') {
+    } else if (text == '交易紀錄') {
       response = '您近期的交易紀錄為...';
-    }
-    else if (text == '分享帳號') {
+    } else if (text == '分享帳號') {
       response = '分享帳號給...';
-    } 
-    else if (text == '權限不足') {
+    } else if (text == '權限不足') {
       response = '很抱歉，您的權限未通過';
-    }
-    else if (text == '功能不存在') {
+    } else if (text == '功能不存在') {
       response = '很抱歉目前沒有此功能，可以試試看其他功能優!';
-    }
-    else {
+    } else {
       response = '尼剛剛說的密碼為: ' + password;
     }
 
