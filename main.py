@@ -235,7 +235,10 @@ def register(register_id, pass_word):
         return 'register success'
 
 
-
+@app.route('/file_test')
+def file_test():
+    return render_template('file_test.html')
+    
 @app.route('/search/<speaker_id>', methods=['POST'])
 def serch(speaker_id):
     sql_cmd = """SELECT * FROM `account_imfo` WHERE `speaker_id`=%s """

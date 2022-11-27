@@ -251,6 +251,15 @@ input::-moz-focus-inner {
   background-color: #ed795a;
 }
 
+#failed_reason {
+  position: absolute;
+  top: 37%;
+  font-weight: 900; 
+  font-size: 15px;
+  color: white;
+  visibility: hidden;
+}
+
 #identify {
   position: absolute;
   top: 30%;
