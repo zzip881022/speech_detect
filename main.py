@@ -216,3 +216,7 @@ def register(register_id, pass_word):
         return 'register error'
     else:
         return 'register success'
+
+@app.route('/file_test')
+def file_test():
+    return render_template('file_test.html')
