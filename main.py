@@ -10,6 +10,7 @@ from SpeechRecognizer import *  # 語者辨識function
 import pymysql  # 資料庫需要
 from flask_sqlalchemy import SQLAlchemy  # 資料庫需要
 from datetime import timedelta
+import random
 
 mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/javascript', '.js')
@@ -21,9 +22,9 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_DATABASE_URI'] = 連接方法://資料庫帳號:資料庫密碼@127.0.0.1:3306/資料庫名稱
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:jo891202@127.0.0.1:3306/speech"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:jo891202@127.0.0.1:3306/speech"
 # app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
-# app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
 db.init_app(app)#初始化flask-SQLAlchemy
 
 # ------------------------------------------ session  --------------------------------------------------
@@ -33,13 +34,13 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 # -----------------------------------------------------------------------------------------------------
 
 
-file_source = 'C:/Users/Alice/Downloads/'
-file_destination = 'D:/Codes/graduate_project/speech_detect'
-enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
+# file_source = 'C:/Users/Alice/Downloads/'
+# file_destination = 'D:/Codes/graduate_project/speech_detect'
+# enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
 
-# file_source = 'C:/Users/wyes9/Downloads/'
-# file_destination = 'D:/speech_detect_web'
-# enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
+file_source = 'C:/Users/wyes9/Downloads/'
+file_destination = 'D:/speech_detect_web'
+enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
 dataset_path=Path("./static/speech_file")
 speaker_dataset, speaker_datasetV = {}, {}#語者辨識資料集變數
 
@@ -219,8 +220,15 @@ def check_before_record():
 def register(register_id, pass_word):
     sql_cmd = """INSERT INTO user(speaker_id,user_password) VALUES (%s,%s)"""
     tuple1 = (register_id, pass_word)
+
+    sql_cmd2="""INSERT INTO account_imfo(speaker_id,available_balance,total_money,name,account) VALUES (%s,%s,%s,%s,%s)"""
+    acc=[0,0,0,1,2,2,3,4,4,5,6,7,8,9]
+    random.shuffle(acc)#隨機產生帳戶帳號
+    tuple2=(register_id,0,0,'使用者',acc)
+
     try:
         query_data = db.engine.execute(sql_cmd, tuple1)
+        query_data2 = db.engine.execute(sql_cmd2, tuple2)
     except:
         return 'register error'
     else:
@@ -232,13 +240,16 @@ def register(register_id, pass_word):
 def serch(speaker_id):
     sql_cmd = """SELECT * FROM `account_imfo` WHERE `speaker_id`=%s """
     tuple1 = (speaker_id)
+
+
     try:
         query_data = db.engine.execute(sql_cmd,tuple1).fetchall()#查詢出來會是找到的所有tuple
     except:
         return 'search error'
     else:
-        print(query_data)
-        return 'serch success'
+        print(query_data[0][1])
+
+        return str(query_data[0][0])+"/"+str(query_data[0][1])+"/"+str(query_data[0][2])+"/"+str(query_data[0][3])+"/"+str(query_data[0][4])
 
 
 @app.route('/logout')
