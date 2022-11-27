@@ -5,6 +5,7 @@ var modal_icon = document.querySelector("#modal_icon");
 const recordBtn = document.querySelector("#record-btn");
 const icon_not_rec = document.querySelector("#icon_not_rec");
 const icon_rec = document.querySelector("#icon_rec");
+const failed_reason = document.querySelector("#failed_reason");
 
 recordBtn.classList.add("notRec");
 
@@ -419,6 +420,20 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 					modal_icon.style.color = 'white';
 					modal_status.innerHTML = "Failed";
 					modal_status.style.color = 'white';
+					failed_reason.style.visibility = 'visible';   
+					
+					let reason = '';
+					if (resultArray[0] == '0') {
+						reason = reason.concat(' 側錄');
+						console.log('reason: ' + reason);
+					}
+					if (resultArray[1].toUpperCase() != final_transcript.toUpperCase()) {
+						reason = reason.concat(' 密碼');
+						console.log('reason: ' + reason);
+					}
+					reason = reason.concat('驗證錯誤');
+					console.log('reason: ' + reason);
+					failed_reason.innerHTML = reason;
 
 					setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
 				}
