@@ -1,5 +1,5 @@
 from email.mime import audio
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template,session
 from torch_utils import get_prediction, set_using_model, audio_to_numpy_mfcc
 import shutil
 import os
@@ -9,6 +9,7 @@ import mimetypes
 from SpeechRecognizer import *  # 語者辨識function
 import pymysql  # 資料庫需要
 from flask_sqlalchemy import SQLAlchemy  # 資料庫需要
+from datetime import timedelta
 
 mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/javascript', '.js')
@@ -25,7 +26,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:jo891202@127.0.0.1
 # app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
 db.init_app(app)#初始化flask-SQLAlchemy
 
-# ------------------------------------------------------------------------------------------------------
+# ------------------------------------------ session  --------------------------------------------------
+app.config['SECRET_KEY'] = os.urandom(24)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
+
+# -----------------------------------------------------------------------------------------------------
 
 
 file_source = 'C:/Users/Alice/Downloads/'
@@ -37,6 +42,9 @@ enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech
 # enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
 dataset_path=Path("./static/speech_file")
 speaker_dataset, speaker_datasetV = {}, {}#語者辨識資料集變數
+
+
+
 
 @app.route('/')
 @app.route('/login')
@@ -69,6 +77,7 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    session['speaker_id'] = False#刪除session
     time.sleep(1)
     if request.method == 'POST':
         verify_model = request.form['verify_model']
@@ -117,7 +126,7 @@ def predict():
     else:
         print("File is deleted successfully")
 
-    return str(prediction)+'/'+query_data[0] +'/'+speaker_id
+    return str(prediction)+'/'+query_data[0]+'/'+str(speaker_id)
 
     # return render_template('predict.html', data=('虛假語音','真實語音')[prediction.item()==1])
 
@@ -217,6 +226,41 @@ def register(register_id, pass_word):
     else:
         return 'register success'
 
+
 @app.route('/file_test')
 def file_test():
     return render_template('file_test.html')
+    
+@app.route('/search/<speaker_id>', methods=['POST'])
+def serch(speaker_id):
+    sql_cmd = """SELECT * FROM `account_imfo` WHERE `speaker_id`=%s """
+    tuple1 = (speaker_id)
+    try:
+        query_data = db.engine.execute(sql_cmd,tuple1).fetchall()#查詢出來會是找到的所有tuple
+    except:
+        return 'search error'
+    else:
+        print(query_data)
+        return 'serch success'
+
+
+@app.route('/logout')
+def logout():
+
+    session['speaker_id'] = False
+    return '1'
+
+
+
+@app.route('/login/<speaker_id>', methods=['POST'])
+def login(speaker_id):
+    #設置session
+    session['speaker_id'] = speaker_id
+    return '1'
+
+@app.route('/getID', methods=['POST'])
+def getID():
+    return str(session.get('speaker_id'))
+  
+
+
