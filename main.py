@@ -222,8 +222,7 @@ def register(register_id, pass_word):
     tuple1 = (register_id, pass_word)
 
     sql_cmd2="""INSERT INTO account_imfo(speaker_id,available_balance,total_money,name,account) VALUES (%s,%s,%s,%s,%s)"""
-    acc=[0,0,0,1,2,2,3,4,4,5,6,7,8,9]
-    random.shuffle(acc)#隨機產生帳戶帳號
+    acc="00121345678293"
     tuple2=(register_id,0,0,'使用者',acc)
 
     try:
