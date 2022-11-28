@@ -77,7 +77,7 @@ body {
   text-align: center;
   font-size: 50px;
   font-weight: 900;
-  margin: 50px 40px 40px;
+  margin: 30px 40px 40px;
 }
 
 .eula {
@@ -129,20 +129,6 @@ label {
   text-align: center;
 }
 
-input {
-  background: transparent;
-  border: 0;
-  color: #f2f2f2;
-  font-size: 20px;
-  height: 30px;
-  line-height: 30px;
-  outline: none !important;
-  width: 100%;
-}
-
-input::-moz-focus-inner {
-  border: 0;
-}
 
 #submit {
   color: #707075;
@@ -271,8 +257,22 @@ input::-moz-focus-inner {
   top: 48%;
 }
 
+.change-password {
+  position: absolute;
+  top: 58%;
+  left: 30%;
+}
+
+.change-password-btn {
+  color: #898383;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
 .enroll-btn {
-  color: #898383;;
+  color: #898383;
   background-color: white;
   border: none;
   cursor: pointer;
@@ -298,3 +298,17 @@ input::-moz-focus-inner {
   color: #497174;
 }
 
+.account_input {
+  position: absolute;
+  top: 45%;
+  left: 10%;
+  align-items: center;
+  height: 10%;
+  width: 80%;
+}
+
+#account {
+  width: 65%;
+  border:2px black solid;
+  height: 90%;
+}
