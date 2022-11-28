@@ -259,7 +259,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
                                     //console.log("狀態:" + detect_result + (end_time - start_time));
 
                                     if (detect_result == '等待辨識') {
-                                        alert("Empty text,please record again!");
+                                        alert("唉呦，不小心沒錄到，麻煩再錄一次~ (●’ω`●）");
                                         $.ajax({
                                             url: "/delete/" + people_num + '/' + record_times,
                                             type: 'POST',
@@ -355,7 +355,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
                                                 
                                                 this_text = last_text;
                                                 detect_result = '已判斷';
-                                                alert("Password seems different,record again please!");
+                                                alert("欸抖，你這一次錄是不是跟上一次不一樣壓 ( ・◇・)？ 再一次!");
                                             }
                                             else
                                             {
@@ -498,7 +498,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
             audio.src = "speech_file/recording/flac/" + people_num + '/train' + record_times + '.flac';
             console.log('record_times = ' + record_times);
             audio.play().catch(function () {
-                alert('Replay mistake! Please try it later.');
+                alert('等我一下下! 一下下就好 ٩(●˙▿˙●)۶…⋆ฺ');
             });
         } else {
             alert('No data. Please record first!');

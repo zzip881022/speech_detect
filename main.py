@@ -1,5 +1,5 @@
 from email.mime import audio
-from flask import Flask, jsonify, request, render_template,session
+from flask import Flask, jsonify, request, render_template, session
 from torch_utils import get_prediction, set_using_model, audio_to_numpy_mfcc
 import shutil
 import os
@@ -25,7 +25,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:jo891202@127.0.0.1:3306/speech"
 # app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
 # app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
-db.init_app(app)#初始化flask-SQLAlchemy
+db.init_app(app)  # 初始化flask-SQLAlchemy
 
 # ------------------------------------------ session  --------------------------------------------------
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -41,15 +41,15 @@ enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech
 # file_source = 'C:/Users/wyes9/Downloads/'
 # file_destination = 'D:/speech_detect_web'
 # enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
-dataset_path=Path("./static/speech_file")
-speaker_dataset, speaker_datasetV = {}, {}#語者辨識資料集變數
-
-
+dataset_path = Path("./static/speech_file")
+speaker_dataset, speaker_datasetV = {}, {}  # 語者辨識資料集變數
+speakerId = -1
 
 
 @app.route('/')
 @app.route('/login')
 def home():
+    session['speaker_id'] = False  # 刪除session
     # ======================================= 語者資料讀取 ====================================================
     for db in os.listdir(dataset_path):
         for lab in os.listdir(dataset_path / db):
@@ -67,15 +67,16 @@ def home():
                     corpus_feature = preprocessing(signal, sample_rate)
                     if flag == 3:
                         speaker_datasetV[lab +
-                            speaker_label].append(corpus_feature)
+                                         speaker_label].append(corpus_feature)
                     else:
                         speaker_dataset[lab +
-                            speaker_label].append(corpus_feature)
+                                        speaker_label].append(corpus_feature)
                         flag += 1
     # ===========================================================================================================
     return render_template('login.html')
 
 
+#--------------------原版 prediction------------------------------------------------------------------
 @app.route('/predict', methods=['POST'])
 def predict():
     session['speaker_id'] = False#刪除session
@@ -112,10 +113,8 @@ def predict():
         else:
             print(query_data[0])#查詢結果以字串形式印出
 
-        
 
         #==========================================================================================================
-        
 
 
     # 辨識完後刪除檔案
@@ -137,6 +136,58 @@ def predict():
     # #     return jsonify(data)
     # # except:
     # return jsonify({'error': 'error during prediction'})
+#------------------------------------------------------------------------------------------------------------
+
+
+#-----------------------改版 prediction ---------------------------------------------------------------------
+
+@app.route('/predict_spoof', methods=['POST'])
+def predict_spoof():
+    time.sleep(1)
+    if request.method == 'POST':
+        verify_model = request.form['verify_model']
+        set_using_model(verify_model)
+        audio_file = request.form['audio_file']
+        shutil.move(file_source + audio_file, file_destination)
+        subprocess.run("ffmpeg -i " + audio_file +
+                       " -c:v copy -c:a flac transfer.flac")
+        time.sleep(1)
+        audio_to_numpy_mfcc("transfer.flac")
+        prediction = get_prediction()
+
+        return prediction
+        # data = {'prediction': prediction.item(), 'verify':verify_model, 'audio':audio_file}
+
+@app.route('/speker_recognize', methods=['POST'])
+def speker_recognize():
+    global speakerId
+    speaker_recoginzer = SpeechRecognizer(
+            "SpeakerRecognizer", speaker_dataset)
+
+    signal, sample_rate = librosa.load("transfer.flac")
+    speaker_result=speaker_recoginzer.recognize(preprocessing(signal, sample_rate))
+    speaker_id = speaker_result.replace("flac","")
+    speakerId = speaker_id
+    print("語者預測:",speaker_id)
+    return speaker_id
+
+@app.route('/password_recognize', methods=['POST'])
+def password_recognize():
+    sql_cmd = """SELECT `user_password` FROM `user` WHERE `speaker_id`=%s """
+
+    tuple1 = speakerId
+    print('tupleeeeeeeeeeeeeee: ', speakerId)
+    try:
+        query_data = db.engine.execute(sql_cmd,tuple1).fetchone()#查詢出來會是找到的第一筆的tuple
+    except:
+        print('serch error')
+        return 'error'
+    else:
+        return query_data[0]
+
+
+
+# -----------------------------------------------------------------------------------------------------------
 
 
 @app.route('/chat')
@@ -208,7 +259,6 @@ def check_before_record():
         deleted_file = deleted_file + 'downloads/transfer.flac '
         delete_something = True
 
-
     # 檢查檔案是否存在
     if delete_something == True:
         return "有事先刪除檔案。已刪除 " + deleted_file
@@ -221,9 +271,9 @@ def register(register_id, pass_word):
     sql_cmd = """INSERT INTO user(speaker_id,user_password) VALUES (%s,%s)"""
     tuple1 = (register_id, pass_word)
 
-    sql_cmd2="""INSERT INTO account_imfo(speaker_id,available_balance,total_money,name,account) VALUES (%s,%s,%s,%s,%s)"""
-    acc="00121345678293"
-    tuple2=(register_id,0,0,'使用者',acc)
+    sql_cmd2 = """INSERT INTO account_imfo(speaker_id,available_balance,total_money,name,account) VALUES (%s,%s,%s,%s,%s)"""
+    acc = "00121345678293"
+    tuple2 = (register_id, 0, 0, '使用者', acc)
 
     try:
         query_data = db.engine.execute(sql_cmd, tuple1)
@@ -237,15 +287,16 @@ def register(register_id, pass_word):
 @app.route('/file_test')
 def file_test():
     return render_template('file_test.html')
-    
+
+
 @app.route('/search/<speaker_id>', methods=['POST'])
 def serch(speaker_id):
     sql_cmd = """SELECT * FROM `account_imfo` WHERE `speaker_id`=%s """
     tuple1 = (speaker_id)
 
-
     try:
-        query_data = db.engine.execute(sql_cmd,tuple1).fetchall()#查詢出來會是找到的所有tuple
+        query_data = db.engine.execute(
+            sql_cmd, tuple1).fetchall()  # 查詢出來會是找到的所有tuple
     except:
         return 'search error'
     else:
@@ -261,16 +312,13 @@ def logout():
     return '1'
 
 
-
 @app.route('/login/<speaker_id>', methods=['POST'])
 def login(speaker_id):
-    #設置session
+    # 設置session
     session['speaker_id'] = speaker_id
     return '1'
+
 
 @app.route('/getID', methods=['POST'])
 def getID():
     return str(session.get('speaker_id'))
-  
-
-
