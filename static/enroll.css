@@ -46,11 +46,13 @@ body {
     top: 55%;
     left: 50%;
 }
+
 #status2 {
     position: absolute;
     top: 55%;
     left: 60%;
 }
+
 #status3 {
     position: absolute;
     top: 55%;
@@ -330,4 +332,21 @@ hr {
     top: 55%;
     left: 83%;
     cursor: pointer;
+}
+
+.account_input {
+    display: flex;
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    align-items: center;
+    height: 10%;
+    width: 40%;
+}
+
+#account {
+    width: 65%;
+    border: 2px #dedcdc solid;
+    height: 70%;
+    font-size: 20px;
 }
