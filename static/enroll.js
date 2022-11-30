@@ -507,9 +507,11 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
 
     registerBtn.onclick = () => {
+        var acc_num=$('#account').val();
+        console.log("acc_num="+acc_num);
         if (record_times >= 3) {
             $.ajax({
-                url: "/register/" + people_num + '/' + password_text,
+                url: "/register/" + people_num + '/' + password_text+'/'+acc_num,
                 type: 'POST',
                 processData: false,
                 contentType: false,

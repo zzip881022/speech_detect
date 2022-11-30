@@ -250,9 +250,6 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         var resultArray = new Array(); //用來接收真假語音判斷和密碼的結果
         resultArray = result.split("/"); //resultArray[0]是真假音判斷，resultArray[1]是密碼文字，resultArray[2]是語者辨識
 
-
-
-
         console.log('session_id:' + session_id + " resultArray[2]: " + resultArray[2] + " 真假音判斷:" + resultArray[0] + " password now:" + password);
 
         if (resultArray[0] == '1' && resultArray[1].toUpperCase() == password.toUpperCase() && session_id == resultArray[2]) {
@@ -592,7 +589,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
             resultArray = result.split("/");
             //resultArray[0]:speaker_id、resultArray[1]:可用餘額、resultArray[2]:帳面餘額、resultArray[3]:用戶名稱、resultArray[4]:用戶帳號
 
-            service_result(resultArray[2] + " TWD");
+            service_result("台幣"+resultArray[2] +"元");
           }
         });
 
@@ -607,7 +604,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
             var resultArray = new Array(); //用來接收帳號資訊
             resultArray = result.split("/");
             //resultArray[0]:speaker_id、resultArray[1]:可用餘額、resultArray[2]:帳面餘額、resultArray[3]:用戶名稱、resultArray[4]:用戶帳號
-            service_result(resultArray[1] + " TWD");
+            service_result("台幣"+resultArray[1]+"元");
           }
 
         });

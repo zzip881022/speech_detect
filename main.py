@@ -23,8 +23,8 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_DATABASE_URI'] = 連接方法://資料庫帳號:資料庫密碼@127.0.0.1:3306/資料庫名稱
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:jo891202@127.0.0.1:3306/speech"
-# app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:jo891202@127.0.0.1:3306/speech"
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
 # app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
 db.init_app(app)  # 初始化flask-SQLAlchemy
 
@@ -42,6 +42,7 @@ enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech
 # file_source = 'C:/Users/wyes9/Downloads/'
 # file_destination = 'D:/speech_detect_web'
 # enroll_save_destination = 'D:/speech_detect_web/static/speech_file/recording/flac/'
+
 dataset_path = Path("./static/speech_file")
 speaker_dataset, speaker_datasetV = {}, {}  # 語者辨識資料集變數
 speakerId = -1
@@ -169,8 +170,22 @@ def speker_recognize():
     speaker_result=speaker_recoginzer.recognize(preprocessing(signal, sample_rate))
     speaker_id = speaker_result.replace("flac","")
     speakerId = speaker_id
-    print("語者預測:",speaker_id)
-    return speaker_id
+    sql_cmd = """SELECT `account_num` FROM `user` WHERE `speaker_id`=%s """
+
+    tuple1 = speakerId
+    
+    try:
+        query_data = db.engine.execute(sql_cmd,tuple1).fetchone()#查詢出來會是找到的第一筆的tuple
+        print("語者辨識:",speakerId," 帳號:",query_data[0])
+    except:
+        return 'error'
+    else:
+        return speaker_id+'/'+query_data[0]
+
+    
+
+
+
 
 @app.route('/password_recognize', methods=['POST'])
 def password_recognize():
@@ -267,10 +282,10 @@ def check_before_record():
         return "檔案不存在，沒有事先刪除任何檔案"
 
 
-@app.route('/register/<register_id>/<pass_word>', methods=['POST'])
-def register(register_id, pass_word):
-    sql_cmd = """INSERT INTO user(speaker_id,user_password) VALUES (%s,%s)"""
-    tuple1 = (register_id, pass_word)
+@app.route('/register/<register_id>/<pass_word>/<acc_num>', methods=['POST'])
+def register(register_id, pass_word,acc_num):
+    sql_cmd = """INSERT INTO user(speaker_id,user_password,account_num) VALUES (%s,%s,%s)"""
+    tuple1 = (register_id, pass_word,acc_num)
 
     sql_cmd2 = """INSERT INTO account_imfo(speaker_id,available_balance,total_money,name,account) VALUES (%s,%s,%s,%s,%s)"""
     acc = "00121345678293"
@@ -283,6 +298,7 @@ def register(register_id, pass_word):
         return 'register error'
     else:
         return 'register success'
+
 
 
 @app.route('/file_test')
