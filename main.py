@@ -11,6 +11,7 @@ import pymysql  # 資料庫需要
 from flask_sqlalchemy import SQLAlchemy  # 資料庫需要
 from datetime import timedelta
 import random
+from synthesis import * # 合成辨識function
 
 mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/javascript', '.js')
@@ -338,3 +339,25 @@ def login(speaker_id):
 @app.route('/getID', methods=['POST'])
 def getID():
     return str(session.get('speaker_id'))
+
+
+#-----------file_test page-------------------------------------------
+# 合成音 model
+@app.route('/synthesis_test', methods=['POST'])
+def synthesis_test():
+    test_file = request.form['test_file']
+    synthesis_test = test(test_file)
+    print('resultttttt', synthesis_test)
+    return synthesis_test
+
+# 側錄音 model
+@app.route('/spoof_test', methods=['POST'])
+def spoof_test():
+    if request.method == 'POST':
+        verify_model = request.form['verify_model']
+        set_using_model(verify_model)
+        audio_file = request.form['audio_file']
+        audio_to_numpy_mfcc(audio_file)
+        prediction = get_prediction()
+        return prediction
+#---------------------------------------------------------------------
