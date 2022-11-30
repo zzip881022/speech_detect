@@ -36,7 +36,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
 
 file_source = 'C:/Users/Alice/Downloads/'
-file_destination = 'D:/Codes/graduate_project/speech_detect'
+file_destination = 'D:/Codes/graduate_project/speech_detect/static/spoof_file'
 enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
 
 # file_source = 'C:/Users/wyes9/Downloads/'
@@ -87,8 +87,8 @@ def predict():
         set_using_model(verify_model)
         audio_file = request.form['audio_file']
         shutil.move(file_source + audio_file, file_destination)
-        subprocess.run("ffmpeg -i " + audio_file +
-                       " -c:v copy -c:a flac transfer.flac")
+        subprocess.run("ffmpeg -i static/spoof_file/" + audio_file +
+                       " -c:v copy -c:a flac static/spoof_file/transfer.flac")
         time.sleep(1)
         audio_to_numpy_mfcc("transfer.flac")
         prediction = get_prediction()
@@ -150,8 +150,8 @@ def predict_spoof():
         set_using_model(verify_model)
         audio_file = request.form['audio_file']
         shutil.move(file_source + audio_file, file_destination)
-        subprocess.run("ffmpeg -i " + audio_file +
-                       " -c:v copy -c:a flac transfer.flac")
+        subprocess.run("ffmpeg -i static/spoof_file/" + audio_file +
+                       " -c:v copy -c:a flac static/spoof_file/transfer.flac")
         time.sleep(1)
         audio_to_numpy_mfcc("transfer.flac")
         prediction = get_prediction()
