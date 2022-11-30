@@ -405,62 +405,112 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 							processData: false,
 							contentType: false,
 							success: function (result) {
-								console.log('語者結果' + result);
-								// show the success modal
-								modal.classList.remove("verifying");
-								modal.classList.add("verify_success");
-								modal_icon.classList.remove("fa-spinner", "fa-spin");
-								modal_icon.classList.add("fa-check-circle");
-								modal_icon.style.color = 'white';
-								modal_status.innerHTML = 'Hi, ' + result;
-								modal_status.style.color = 'white';
-								setTimeout(function () {
-									// show the success modal
-									modal.classList.remove("verify_success");
-									modal.classList.add("verifying");
-									modal_icon.classList.remove("fa-check-circle");
-									modal_icon.classList.add("fa-spinner", "fa-spin");
-									modal_icon.style.color = 'black';
-									modal_status.innerHTML = "密碼辨識中...";
-									modal_status.style.color = 'black';
 
+								var resultArray = new Array(); //用來接收真假語音判斷和密碼的結果
+								resultArray = result.split("/"); //resultArray[0]是speaker_id，resultArray[1]是該id的註冊帳號
+
+								console.log('語者辨識結果: ' + resultArray[0] + " 正確帳號: " + resultArray[1]);
+								var acc_num = $('#account').val();
+								console.log("登入者輸入帳號:"+acc_num)
+
+								if (resultArray[1] == acc_num) { //假設輸入的帳號與語者判定的帳號相同
+									// show the success modal
+									modal.classList.remove("verifying");
+									modal.classList.add("verify_success");
+									modal_icon.classList.remove("fa-spinner", "fa-spin");
+									modal_icon.classList.add("fa-check-circle");
+									modal_icon.style.color = 'white';
+									modal_status.innerHTML = 'Hi, ' + resultArray[1];
+									modal_status.style.color = 'white';
 									setTimeout(function () {
-										//--------------------------------密碼辨識---------------------------------
-										$.ajax({
-											url: "/password_recognize",
-											type: 'POST',
-											processData: false,
-											contentType: false,
-											success: function (result) {
-												console.log('密碼結果' + result);
-												if (result == 'error') {
-													// show the failed modal
-													modal.classList.remove("verifying");
-													modal.classList.add("verify_failed");
-													modal_icon.classList.remove("fa-spinner", "fa-spin");
-													modal_icon.classList.add("fa-times");
-													modal_icon.style.color = 'white';
-													modal_status.innerHTML = "Failed";
-													modal_status.style.color = 'white';
-													failed_reason.style.visibility = 'visible';
-													reason = '密碼驗證錯誤';
-													failed_reason.innerHTML = reason;
-													setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
-												} else {
-													// show the success modal
-													modal.classList.remove("verifying");
-													modal.classList.add("verify_success");
-													modal_icon.classList.remove("fa-spinner", "fa-spin");
-													modal_icon.classList.add("fa-check-circle");
-													modal_icon.style.color = 'white';
-													modal_status.innerHTML = "密碼驗證成功";
-													modal_status.style.color = 'white';
-													setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
+										// show the success modal
+										modal.classList.remove("verify_success");
+										modal.classList.add("verifying");
+										modal_icon.classList.remove("fa-check-circle");
+										modal_icon.classList.add("fa-spinner", "fa-spin");
+										modal_icon.style.color = 'black';
+										modal_status.innerHTML = "密碼辨識中...";
+										modal_status.style.color = 'black';
+
+										setTimeout(function () {
+											//--------------------------------密碼辨識---------------------------------
+											$.ajax({
+												url: "/password_recognize",
+												type: 'POST',
+												processData: false,
+												contentType: false,
+												success: function (result) {
+													console.log('密碼結果' + result);
+													if (result == 'error' || result.toUpperCase() != final_transcript.toUpperCase()) {
+														// show the failed modal
+														modal.classList.remove("verifying");
+														modal.classList.add("verify_failed");
+														modal_icon.classList.remove("fa-spinner", "fa-spin");
+														modal_icon.classList.add("fa-times");
+														modal_icon.style.color = 'white';
+														modal_status.innerHTML = "Failed";
+														modal_status.style.color = 'white';
+														failed_reason.style.visibility = 'visible';
+														reason = '密碼驗證錯誤';
+														failed_reason.innerHTML = reason;
+														setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
+													} else{
+														// show the success modal
+														modal.classList.remove("verifying");
+														modal.classList.add("verify_success");
+														modal_icon.classList.remove("fa-spinner", "fa-spin");
+														modal_icon.classList.add("fa-check-circle");
+														modal_icon.style.color = 'white';
+														modal_status.innerHTML = "密碼驗證成功";
+														modal_status.style.color = 'white';
+														//------ 設定session保存語者編號 ------------
+														$.ajax({
+															url: "/login/" + resultArray[0],
+															type: 'POST',
+															processData: false,
+															contentType: false,
+															success: function (result) {
+
+																console.log("login success");
+																setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
+
+															}
+
+														});
+														//------------------------------------------
+													}
 												}
-											}
-										});
+											});
+										}, 2000);
 									}, 2000);
-								}, 2000);
+
+								} else {
+
+									//顯示帳號與語者判定的不符合
+									// show the failed modal
+									modal.classList.remove("verifying");
+									modal.classList.add("verify_failed");
+									modal_icon.classList.remove("fa-spinner", "fa-spin");
+									modal_icon.classList.add("fa-times");
+									modal_icon.style.color = 'white';
+									modal_status.innerHTML = "Failed";
+									modal_status.style.color = 'white';
+									failed_reason.style.visibility = 'visible';
+									reason = '語者辨識結果與帳號不符';
+									failed_reason.innerHTML = reason;
+									setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
+								}
+
+
+
+
+
+
+
+
+
+
+
 								// if (語者辨識結果跟帳號是同一個人) {
 								// 	// show the success modal
 								// 	modal.classList.remove("verifying");
