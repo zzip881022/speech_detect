@@ -368,7 +368,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 		//============================改版=========================================
 		//--------------------------------側錄辨識---------------------------------
 		var formData = new FormData();
-		formData.append('verify_model', 'transfer_cnn_noEMD_1120.pt');
+		formData.append('verify_model', 'transfer_cnn_noEMD_1201.pt');
 		formData.append('audio_file', 'output.flac');
 
 		$.ajax({
@@ -411,7 +411,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
 								console.log('語者辨識結果: ' + resultArray[0] + " 正確帳號: " + resultArray[1]);
 								var acc_num = $('#account').val();
-								console.log("登入者輸入帳號:"+acc_num)
+								console.log("登入者輸入帳號:" + acc_num)
 
 								if (resultArray[1] == acc_num) { //假設輸入的帳號與語者判定的帳號相同
 									// show the success modal
@@ -454,7 +454,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 														reason = '密碼驗證錯誤';
 														failed_reason.innerHTML = reason;
 														setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
-													} else{
+													} else {
 														// show the success modal
 														modal.classList.remove("verifying");
 														modal.classList.add("verify_success");
@@ -559,6 +559,20 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 					modal_status.style.color = 'white';
 					failed_reason.style.visibility = 'visible';
 					reason = '側錄驗證錯誤';
+					failed_reason.innerHTML = reason;
+					setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
+
+				} else if (result == 'audio error') { //audio_to_numpy出錯的話
+					// show the failed modal
+					modal.classList.remove("verifying");
+					modal.classList.add("verify_failed");
+					modal_icon.classList.remove("fa-spinner", "fa-spin");
+					modal_icon.classList.add("fa-times");
+					modal_icon.style.color = 'white';
+					modal_status.innerHTML = "Failed";
+					modal_status.style.color = 'white';
+					failed_reason.style.visibility = 'visible';
+					reason = '未錄到音';
 					failed_reason.innerHTML = reason;
 					setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
 				}
