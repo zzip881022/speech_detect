@@ -225,7 +225,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
     // test
     var formData = new FormData();
-    formData.append('verify_model', 'transfer_cnn_noEMD_1120.pt');
+    formData.append('verify_model', 'transfer_cnn_noEMD_1201.pt');
     // formData.append('audio_file', blob);
     formData.append('audio_file', 'output.flac');
 

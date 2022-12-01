@@ -1,23 +1,17 @@
-var msg_box = document.getElementById('msg_box'),
-    recordBtn = document.getElementById('button'),
-    resetBtn = document.getElementById('reset'),
-    replayBtn = document.getElementById('replay'),
-    registerBtn = document.getElementById('register'),
-    check = document.getElementsByClassName('circle'),
-    hint = [
+var msg_box = document.getElementById('msg_box'),       // 錄音次數提示字的元件
+    recordBtn = document.getElementById('button'),      // 錄音按鈕
+    resetBtn = document.getElementById('reset'),        // 重錄按鈕
+    replayBtn = document.getElementById('replay'),      // 回放按鈕
+    registerBtn = document.getElementById('register'),  // 註冊按鈕
+    check = document.getElementsByClassName('circle'),  // 錄音次數狀態 check[0], check[1], check[2]
+    hint = [    // 錄音次數提示字
         '',
         'The second time',
         'The last time',
         'Finished setting'
     ],
-    lang = {
+    lang = {    // 錄音中提示字
         'recording': 'Recording...',
-        'mic_error': 'Error accessing the microphone',
-        'press_to_start': 'Press to set password',
-        'play': 'Play',
-        'stop': 'Stop',
-        'download': 'Download',
-        'use_https': 'This application in not working over insecure connection. Try to use HTTPS'
     };
 
 var recorderApp = angular.module('recorder', []);

@@ -175,16 +175,16 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			final_transcript = ''; // 最終的辨識訊息變數
 			recognition.start(); // 開始辨識
 
-			// // 開始錄之前先檢查有沒有 output.flac、transfer.flac，有的話就刪除
-			// $.ajax({
-			// 	url: "/check_before_record",
-			// 	type: 'POST',
-			// 	processData: false,
-			// 	contentType: false,
-			// 	success: function (result) {
-			// 		console.log(result);
-			// 	}
-			// });
+			// 開始錄之前先檢查有沒有 output.flac、transfer.flac，有的話就刪除
+			$.ajax({
+				url: "/check_before_record",
+				type: 'POST',
+				processData: false,
+				contentType: false,
+				success: function (result) {
+					console.log(result);
+				}
+			});
 
 			console.log("錄音中...");
 			recordBtn.classList.remove("notRec");
