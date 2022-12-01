@@ -83,7 +83,7 @@ def test(fileName):
 
         imf=np.load(trainDir_Real_Emd+fileName)
         imf=imf.tolist()
-        sum=np.array(imf[0])+np.array(imf[1])+np.array(imf[5])
+        sum=np.array(imf[0])+np.array(imf[2])+np.array(imf[3])
 
         #mfcc=extract_mfcc(sum)
         mfcc=librosa.feature.mfcc(y=sum,sr=16000,n_mfcc=60,hop_length=137) #要調整
