@@ -23,7 +23,8 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_DATABASE_URI'] = 連接方法://資料庫帳號:資料庫密碼@127.0.0.1:3306/資料庫名稱
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:jo891202@127.0.0.1:3306/speech"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:jo891202@127.0.0.1:3306/speech"
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:joyce6221921@127.0.0.1:3306/speech"
 # app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
 # app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:CSIEa1083334jane@127.0.0.1:3306/speech"
 db.init_app(app)  # 初始化flask-SQLAlchemy
@@ -35,9 +36,12 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 # -----------------------------------------------------------------------------------------------------
 
 
-file_source = 'C:/Users/Alice/Downloads/'
-file_destination = 'D:/Codes/graduate_project/speech_detect/static/spoof_file'
-enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
+file_source = 'C:/Users/USER/Downloads/'
+file_destination = 'C:/Users/USER/Desktop/高大資工/畢專/final_system/speech_detect/static/spoof_file'
+enroll_save_destination = 'C:/Users/USER/Desktop/高大資工/畢專/final_system/speech_file/recording/flac/'
+# file_source = 'C:/Users/Alice/Downloads/'
+# file_destination = 'D:/Codes/graduate_project/speech_detect'
+# enroll_save_destination = 'D:/Codes/graduate_project/speech_detect/static/speech_file/recording/flac/'
 
 # file_source = 'C:/Users/wyes9/Downloads/'
 # file_destination = 'D:/speech_detect_web'
@@ -109,6 +113,7 @@ def predict():
         sql_cmd = """SELECT `user_password` FROM `user` WHERE `speaker_id`=%s """
 
         tuple1 = speaker_id
+        query_data=''
         try:
             query_data = db.engine.execute(sql_cmd,tuple1).fetchone()#查詢出來會是找到的第一筆的tuple
         except:
@@ -129,7 +134,7 @@ def predict():
     else:
         print("File is deleted successfully")
 
-    return str(prediction)+'/'+query_data[0]+'/'+str(speaker_id)
+    return str(prediction)+'/'+str(query_data[0])+'/'+str(speaker_id)
 
     # return render_template('predict.html', data=('虛假語音','真實語音')[prediction.item()==1])
 
