@@ -1,3 +1,2 @@
 temp/
-static/speech_file/
-Downloads/
+__pycache__/
