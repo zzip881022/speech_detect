@@ -175,16 +175,16 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			final_transcript = ''; // 最終的辨識訊息變數
 			recognition.start(); // 開始辨識
 
-			// 開始錄之前先檢查有沒有 output.flac、transfer.flac，有的話就刪除
-			$.ajax({
-				url: "/check_before_record",
-				type: 'POST',
-				processData: false,
-				contentType: false,
-				success: function (result) {
-					console.log(result);
-				}
-			});
+			// // 開始錄之前先檢查有沒有 output.flac、transfer.flac，有的話就刪除
+			// $.ajax({
+			// 	url: "/check_before_record",
+			// 	type: 'POST',
+			// 	processData: false,
+			// 	contentType: false,
+			// 	success: function (result) {
+			// 		console.log(result);
+			// 	}
+			// });
 
 			console.log("錄音中...");
 			recordBtn.classList.remove("notRec");
@@ -372,72 +372,72 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 		check_session = 0;
 
 
-		$.ajax({
-			url: "/predict",
-			type: 'POST',
-			data: formData,
-			processData: false,
-			contentType: false,
-			success: function (result) {
-				console.log(result);
-				var resultArray = new Array(); //用來接收真假語音判斷和密碼的結果
-				resultArray = result.split("/"); //resultArray[0]是真假音判斷，resultArray[1]是密碼文字，resultArray[2]是語者編號
-				if (resultArray[0] == '1' && resultArray[1].toUpperCase() == final_transcript.toUpperCase()) {
-					// show the success modal
-					modal.classList.remove("verifying");
-					modal.classList.add("verify_success");
-					modal_icon.classList.remove("fa-spinner", "fa-spin");
-					modal_icon.classList.add("fa-check-circle");
-					modal_icon.style.color = 'white';
-					modal_status.innerHTML = "Success";
-					modal_status.style.color = 'white';
+		// $.ajax({
+		// 	url: "/predict",
+		// 	type: 'POST',
+		// 	data: formData,
+		// 	processData: false,
+		// 	contentType: false,
+		// 	success: function (result) {
+		// 		console.log(result);
+		// 		var resultArray = new Array(); //用來接收真假語音判斷和密碼的結果
+		// 		resultArray = result.split("/"); //resultArray[0]是真假音判斷，resultArray[1]是密碼文字，resultArray[2]是語者編號
+		// 		if (resultArray[0] == '1' && resultArray[1].toUpperCase() == final_transcript.toUpperCase()) {
+		// 			// show the success modal
+		// 			modal.classList.remove("verifying");
+		// 			modal.classList.add("verify_success");
+		// 			modal_icon.classList.remove("fa-spinner", "fa-spin");
+		// 			modal_icon.classList.add("fa-check-circle");
+		// 			modal_icon.style.color = 'white';
+		// 			modal_status.innerHTML = "Success";
+		// 			modal_status.style.color = 'white';
 
 
-					//------ 設定session保存語者編號 ------------
-					$.ajax({
-						url: "/login/" + resultArray[2],
-						type: 'POST',
-						processData: false,
-						contentType: false,
-						success: function (result) {
+		// 			//------ 設定session保存語者編號 ------------
+		// 			$.ajax({
+		// 				url: "/login/" + resultArray[2],
+		// 				type: 'POST',
+		// 				processData: false,
+		// 				contentType: false,
+		// 				success: function (result) {
 
-							console.log("login success");
-							setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
+		// 					console.log("login success");
+		// 					setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
 
-						}
+		// 				}
 
-					});
-					//------------------------------------------
+		// 			});
+		// 			//------------------------------------------
 
 
 
-				} else if (resultArray[0] == '0' || resultArray[1].toUpperCase() != final_transcript.toUpperCase()) {
-					// show the failed modal
-					modal.classList.remove("verifying");
-					modal.classList.add("verify_failed");
-					modal_icon.classList.remove("fa-spinner", "fa-spin");
-					modal_icon.classList.add("fa-times");
-					modal_icon.style.color = 'white';
-					modal_status.innerHTML = "Failed";
-					modal_status.style.color = 'white';
-					failed_reason.style.visibility = 'visible';   
+		// 		} else if (resultArray[0] == '0' || resultArray[1].toUpperCase() != final_transcript.toUpperCase()) {
+		// 			// show the failed modal
+		// 			modal.classList.remove("verifying");
+		// 			modal.classList.add("verify_failed");
+		// 			modal_icon.classList.remove("fa-spinner", "fa-spin");
+		// 			modal_icon.classList.add("fa-times");
+		// 			modal_icon.style.color = 'white';
+		// 			modal_status.innerHTML = "Failed";
+		// 			modal_status.style.color = 'white';
+		// 			failed_reason.style.visibility = 'visible';   
 					
-					let reason = '';
-					if (resultArray[0] == '0') {
-						reason = reason.concat(' 側錄');
-						console.log('reason: ' + reason);
-					}
-					if (resultArray[1].toUpperCase() != final_transcript.toUpperCase()) {
-						reason = reason.concat(' 密碼');
-						console.log('reason: ' + reason);
-					}
-					reason = reason.concat('驗證錯誤');
-					console.log('reason: ' + reason);
-					failed_reason.innerHTML = reason;
+		// 			let reason = '';
+		// 			if (resultArray[0] == '0') {
+		// 				reason = reason.concat(' 側錄');
+		// 				console.log('reason: ' + reason);
+		// 			}
+		// 			if (resultArray[1].toUpperCase() != final_transcript.toUpperCase()) {
+		// 				reason = reason.concat(' 密碼');
+		// 				console.log('reason: ' + reason);
+		// 			}
+		// 			reason = reason.concat('驗證錯誤');
+		// 			console.log('reason: ' + reason);
+		// 			failed_reason.innerHTML = reason;
 
-					setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
-				}
-			}
-		});
+		// 			setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
+		// 		}
+		// 	}
+		// });
 	};
 }]);
