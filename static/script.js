@@ -13,20 +13,23 @@ var startRecord = false;
 var functions = ['帳戶餘額', '可用餘額', '約定轉帳', '非約定轉帳', '交易紀錄', '分享帳號'];
 var command = ''; // 用來存使用者想要的 function
 var password = ''; // 用來存使用者講出的密碼
-var speaker_id = '';
+var session_id = 'x'; //從session拿到登入時的id
+//儲存帳戶資訊的變數
+var acc_balance = 0;
+var acc_total = 0;
+var acc_name =
 
+  $.ajax({
+    url: "/getID",
+    type: 'POST',
+    processData: false,
+    contentType: false,
+    success: function (result) {
+      session_id = result;
+      console.log("session_id ajax:" + session_id)
+    }
+  });
 
-var session_id='x';
-$.ajax({
-  url: "/getID",
-  type: 'POST',
-  processData: false,
-  contentType: false,
-  success: function (result) {
-    session_id=result;
-    console.log("session_id ajax:"+session_id)
-  }
-});
 
 
 recorderApp.controller('RecorderController', ['$scope', function ($scope) {
@@ -247,17 +250,16 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
         var resultArray = new Array(); //用來接收真假語音判斷和密碼的結果
         resultArray = result.split("/"); //resultArray[0]是真假音判斷，resultArray[1]是密碼文字，resultArray[2]是語者辨識
 
+        console.log('session_id:' + session_id + " resultArray[2]: " + resultArray[2] + " 真假音判斷:" + resultArray[0] + " password now:" + password);
 
-
-        
-        console.log('session_id:'+session_id+" resultArray[2]: "+resultArray[2]+" 真假音判斷:"+resultArray[0]+" password now:"+password);
-
-        if (resultArray[0] == '1' && resultArray[1].toUpperCase() == password.toUpperCase() && session_id==resultArray[2]) {
+        if (resultArray[0] == '1' && resultArray[1].toUpperCase() == password.toUpperCase() && session_id == resultArray[2]) {
           tag.classList.remove("rejected");
           tag.classList.add("approved");
           tag.innerHTML = 'Authorized   <i class="fa fa-unlock-alt" aria-hidden="true"></i>';
-          adminSend(password);
-        } else if (resultArray[0] == '0' || resultArray[1].toUpperCase() != password.toUpperCase()||session_id!=resultArray[2]) {
+          adminSend(command);
+
+
+        } else if (resultArray[0] == '0' || resultArray[1].toUpperCase() != password.toUpperCase() || session_id != resultArray[2]) {
           tag.classList.remove("approved");
           tag.classList.add("rejected");
           tag.innerHTML = 'Unauthorized <i class="fa fa-lock" aria-hidden="true"></i>';
@@ -332,18 +334,18 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 
         } else if (e.data.cmd === 'not-init') {
 
-					// close load wrapp
+          // close load wrapp
           load_wrapp_identify.style.opacity = "0";
           load_wrapp_identify.style.visibility = "hidden";
 
-					// show backdrop effect
-					var backdrop = document.getElementsByClassName("backdrop")[0];
-					backdrop.style.opacity = "0";
-					backdrop.style.visibility = "hidden";
+          // show backdrop effect
+          var backdrop = document.getElementsByClassName("backdrop")[0];
+          backdrop.style.opacity = "0";
+          backdrop.style.visibility = "hidden";
 
-					alert('Error! Try it again');
+          alert('Error! Try it again');
 
-				} else {
+        } else {
 
           console.error('Unknown event from encoder (WebWorker): "' + e.data.cmd + '"!');
         }
@@ -463,13 +465,14 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
   //User msg
   function userSend(text) {
     var functionExist = false;
-    console.log("!!!!!!!!!!!!!!!!");
+
 
     if (text != '') {
       // 跟快捷功能一樣才需要語音輸入密碼
       for (let i = 0; i < functions.length; i++) {
         if (text === functions[i]) {
           functionExist = true;
+          command = text;
           // show load wrapp
           load_wrapp_microfone.style.opacity = "1";
           load_wrapp_microfone.style.visibility = "visible";
@@ -493,7 +496,12 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
       if (functionExist) {
         recording();
       } else {
-        adminSend('功能不存在');
+        if(message_status=='帳號輸入'||message_status=='金額輸入'){
+          adminSend(text);
+        }else{
+          adminSend('功能不存在');
+        }
+        
       }
 
     } else {
@@ -501,37 +509,181 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
     }
   }
 
+  function service_result(text) {
 
-  //Admin msg
-  function adminSend(text) {
-    var response = '';
-    if (text == '帳戶餘額') {
-
-      response = '您的帳戶餘額為...';
-    } else if (text == '可用餘額') {
-      response = '您的可用餘額為...';
-    } else if (text == '約定轉帳') {
-      response = '約定轉帳給...';
-    } else if (text == '非約定轉帳') {
-      response = '非約定轉帳給...';
-    } else if (text == '交易紀錄') {
-      response = '您近期的交易紀錄為...';
-    } else if (text == '分享帳號') {
-      response = '分享帳號給...';
-    } else if (text == '權限不足') {
-      response = '很抱歉，您的權限未通過';
-    } else if (text == '功能不存在') {
-      response = '很抱歉目前沒有此功能，可以試試看其他功能優!';
-    } else {
-      response = '尼剛剛說的密碼為: ' + password;
-    }
-
-    $('#chat_converse').append('<div class="chat_msg_item chat_msg_item_admin"><div class="chat_avatar"><i class="zmdi zmdi-headset-mic"></i></div>' + response + '</div>');
+    $('#chat_converse').append('<div class="chat_msg_item chat_msg_item_admin"><div class="chat_avatar"><i class="zmdi zmdi-headset-mic"></i></div>' + text + '</div>');
     botSpeak(text);
     if ($('.chat_converse').height() >= 256) {
       $('.chat_converse').addClass('is-max');
     }
     $('.chat_converse').scrollTop($('.chat_converse')[0].scrollHeight);
+  }
+
+  function check_account_format(text) { //確認銀行帳號格式
+    console.log("text"+text);
+    if ( text[0]!='('||text[4]!=')'||text.length != 19) {
+
+      return false;
+    } else {
+
+      if (Number(text.substring(1, 3)) == NaN) {
+        return false;
+      } else if (Number(text.substring(5, )) == NaN) {
+        return false;
+      } else{
+        return true;
+      }
+
+    }
+
+  }
+
+  function check_amount_format(text) { //確認轉帳金額格式
+    console.log("text"+text);
+    if (Number(text) == NaN || Number(text) > acc_balance) {
+      return false;
+    } else {
+      return true;
+    }
+
+  }
+
+  var message_status = '無'; //status=無or帳號輸入or金額輸入
+
+
+
+  //Admin msg
+  function adminSend(text) {
+    var response = '';
+    console.log("!!!!!!!!!!!!!!!!");
+    if (message_status == '帳號輸入') {
+
+      if (check_account_format(text)) {
+        service_result("請輸入轉帳金額");
+        message_status = '金額輸入';
+      } else {
+        service_result("帳號資訊錯誤請重新操作");
+        message_status = '無';
+      }
+      
+    } else if (message_status == '金額輸入') {
+      if (check_amount_format(text)) {
+        service_result("轉帳成功");
+        message_status = '無';
+      } else {
+        service_result("金額錯誤或餘額不足請重新操作");
+        message_status = '無';
+      }
+    } else {
+      if (text == '帳戶餘額') {
+
+        response = '您的帳戶餘額為...';
+
+        $.ajax({
+          url: "/search/" + session_id,
+          type: 'POST',
+          processData: false,
+          contentType: false,
+          success: function (result) {
+            var resultArray = new Array(); //用來接收帳號資訊
+            resultArray = result.split("/");
+            //resultArray[0]:speaker_id、resultArray[1]:可用餘額、resultArray[2]:帳面餘額、resultArray[3]:用戶名稱、resultArray[4]:用戶帳號
+
+            service_result("台幣"+resultArray[2] +"元");
+          }
+        });
+
+      } else if (text == '可用餘額') {
+        response = '您的可用餘額為...';
+        $.ajax({
+          url: "/search/" + session_id,
+          type: 'POST',
+          processData: false,
+          contentType: false,
+          success: function (result) {
+            var resultArray = new Array(); //用來接收帳號資訊
+            resultArray = result.split("/");
+            //resultArray[0]:speaker_id、resultArray[1]:可用餘額、resultArray[2]:帳面餘額、resultArray[3]:用戶名稱、resultArray[4]:用戶帳號
+            service_result("台幣"+resultArray[1]+"元");
+          }
+
+        });
+
+      } else if (text == '約定轉帳') {
+        response = '約定轉帳給...';
+        $.ajax({
+          url: "/search/" + session_id,
+          type: 'POST',
+          processData: false,
+          contentType: false,
+          success: function (result) {
+            var resultArray = new Array(); //用來接收帳號資訊
+            resultArray = result.split("/");
+            acc_balance = resultArray[1];
+            //resultArray[0]:speaker_id、resultArray[1]:可用餘額、resultArray[2]:帳面餘額、resultArray[3]:用戶名稱、resultArray[4]:用戶帳號
+          }
+        });
+        message_status = '帳號輸入';
+
+      } else if (text == '非約定轉帳') {
+        response = '非約定轉帳給...';
+
+        $.ajax({
+          url: "/search/" + session_id,
+          type: 'POST',
+          processData: false,
+          contentType: false,
+          success: function (result) {
+            var resultArray = new Array(); //用來接收帳號資訊
+            resultArray = result.split("/");
+            acc_balance = resultArray[1];
+            //resultArray[0]:speaker_id、resultArray[1]:可用餘額、resultArray[2]:帳面餘額、resultArray[3]:用戶名稱、resultArray[4]:用戶帳號
+          }
+
+        });
+
+        message_status = '帳號輸入';
+
+      } else if (text == '交易紀錄') {
+        response = '您近期的交易紀錄為...';
+
+
+      } else if (text == '分享帳號') {
+        response = '本帳號資訊...';
+        $.ajax({
+          url: "/search/" + session_id,
+          type: 'POST',
+          processData: false,
+          contentType: false,
+          success: function (result) {
+            var resultArray = new Array(); //用來接收帳號資訊
+            resultArray = result.split("/");
+            //resultArray[0]:speaker_id、resultArray[1]:可用餘額、resultArray[2]:帳面餘額、resultArray[3]:用戶名稱、resultArray[4]:用戶帳號
+            var message = "戶名: " + resultArray[3] + "<br>銀行代碼: (000)" + "<br>用戶帳號: " + resultArray[4];
+            service_result(message);
+          }
+        });
+
+
+
+      } else if (text == '權限不足') {
+        response = '很抱歉，您的權限未通過';
+      } else if (text == '功能不存在') {
+        response = '很抱歉目前沒有此功能，可以試試看其他功能優!';
+      } else {
+        response = '尼剛剛說的密碼為: ' + password;
+      }
+
+      $('#chat_converse').append('<div class="chat_msg_item chat_msg_item_admin"><div class="chat_avatar"><i class="zmdi zmdi-headset-mic"></i></div>' + response + '</div>');
+      botSpeak(text);
+      if ($('.chat_converse').height() >= 256) {
+        $('.chat_converse').addClass('is-max');
+      }
+      $('.chat_converse').scrollTop($('.chat_converse')[0].scrollHeight);
+    }
+
+
+
   }
 
   //Send input using enter and send key

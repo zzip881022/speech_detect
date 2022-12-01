@@ -1,33 +1,48 @@
+@font-face {
+    font-family: 'Monda-Regular';
+    src: url(Monda-Regular.ttf) format('truetype');
+}
+
 html,
 body {
     height: 100%;
     padding: 0;
     margin: 0;
+    background-color: #d7d7d7;
+    overflow: hidden;
+    font-family: 'Monda-Regular';
 }
 
 .recording_recog {
     width: 40%;
-    height: 100%;
+    height: 55%;
     position: absolute;
-    left: 10%;
+    top: 40%;
+    left: 8%;
     text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgb(0 0 0 / 50%);
 }
 
 .synthesis_recog {
     width: 40%;
-    height: 100%;
+    height: 55%;
     position: absolute;
-    left: 50%;
+    top: 40%;
+    left: 53%;
     text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgb(0 0 0 / 50%);
 }
 
-.vertical-line {
+hr {
+    border: 2px dashed black;
+    width: 90%;
     position: absolute;
-    left: 50%;
-    top: 35px;
-    background: #dedcdc;
-    width: 1px;
-    height: 470px;
+    top: 33%;
+    left: 5%;
 }
 
 #input_recording {
@@ -40,4 +55,143 @@ body {
     position: absolute;
     left: 20%;
     top: 20%;
+}
+
+.logo {
+    position: absolute;
+    top: 40px;
+    left: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.logo_text {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 550;
+    position: absolute;
+    top: 23%;
+    left: 38%;
+}
+
+audio {
+    width: 300px;
+}
+
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-panel {
+    background-color: #d7d7d7;
+    color: #000;
+}
+
+label {
+    position: relative;
+}
+
+.fileinp {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+}
+
+#btn {
+    margin-right: 5px;
+    font-size: 20px;
+    padding: 10px 20px;
+    background-color: #6d9886;
+    color: white;
+    border: #6d9886;
+    border-radius: 10px;
+    box-shadow: 0 0px 5px rgb(0 0 0 / 50%);
+    cursor: pointer;
+}
+
+.text {
+    color: #d7d7d7;
+    margin-left: 5px;
+}
+
+#choose_file {
+    position: absolute;
+    top: 50%;
+    left: 25%;
+}
+
+.submit {
+    font-size: 20px;
+    padding: 10px 20px;
+    background-color: #d7d7d7;
+    color: black;
+    border: #d7d7d7;
+    border-radius: 10px;
+    box-shadow: 0 0px 5px rgb(0 0 0 / 50%);
+    position: absolute;
+    top: 72%;
+    left: 25%;
+    cursor: pointer;
+}
+
+.result_text {
+    position: absolute;
+    top: 68%;
+    left: 50%;
+}
+
+.result {
+    position: absolute;
+    top: 68%;
+    left: 70%;
+}
+
+#result_synthesis_real {
+    visibility: hidden;
+}
+
+#result_synthesis_fake {
+    visibility: hidden;
+}
+
+#result_synthesis_unknow {
+    visibility: hidden;
+}
+
+#result_recording_real {
+    visibility: hidden;
+}
+
+#result_recording_fake {
+    visibility: hidden;
+}
+
+#result_recording_unknow {
+    visibility: hidden;
+}
+
+.real {
+    color: #6d9886;
+}
+
+.fake {
+    color: #ed795a;
+}
+
+.unknow {
+    color: #d7d7d7;
+}
+
+.wait {
+    position: absolute;
+    top: 77%;
+    left: 69%;
+}
+
+#wait_icon_synthesis {
+    visibility: hidden;
+}
+
+#wait_icon_recording {
+    visibility: hidden;
 }

@@ -4,19 +4,50 @@
 <head>
     <meta charset=“utf8”>
     <link rel="stylesheet" href="static/file_test.css?fefe" type="text/css">
+    <!-- icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
+    <div class="logo">
+        <div class="logo_img" style="display: inline-block;">
+            <img src="static/logo.png" width="100" height="80">
+        </div>
+    </div>
+    <div class="logo_text" style="display: inline-block;">
+        <span>UPLOAD YOUR FILES</span>
+    </div>
+    <hr>
     <div class="recording_recog">
-        <h2>側錄辨識</h2>
-        <input type="file" id="input_recording">
-        <audio src="static/output.flac" autoplay controls></audio>
+        <h2>側錄</h2>
+        <audio src="" autoplay controls id="recording_play"></audio>
+        <label for="fileinp" id="choose_file">
+            <input type="button" id="btn" value="Select File..."><span id="text_recording" class="text">尚未選擇檔案</span>
+            <input type="file" id="fileinp_recording" class="fileinp" accept=".flac">
+        </label>
+        <input type="button" id="submit_recording" class="submit" value="Submit">
+        <h3 class="result_text">辨識結果 > </h3>
+        <h3 class="result real" id="result_recording_real">真實</h3>
+        <h3 class="result fake" id="result_recording_fake">側錄</h3>
+        <i class="fa fa-spinner fa-spin wait" id="wait_icon_recording"></i>
     </div>
-    <div class="vertical-line"></div>
     <div class="synthesis_recog">
-        <h2>合成辨識</h2>
-        <input type="file" id="input_synthesis">
-        <audio src="static/output.flac" autoplay controls></audio>
+        <h2>合成</h2>
+        <audio src="" autoplay controls id="synthesis_play"></audio>
+        <label for="fileinp" id="choose_file">
+            <input type="button" id="btn" value="Select File..."><span id="text_synthesis" class="text">尚未選擇檔案</span>
+            <input type="file" id="fileinp_synthesis" class="fileinp" accept=".wav">
+        </label>
+        <input type="button" id="submit_synthesis" class="submit" value="Submit">
+        <h3 class="result_text">辨識結果 > </h3>
+        <h3 class="result real" id="result_synthesis_real">真實</h3>
+        <h3 class="result fake" id="result_synthesis_fake">合成</h3>
+        <h3 class="result unknow" id="result_synthesis_unknow">不知</h3>
+        <i class="fa fa-spinner fa-spin wait" id="wait_icon_synthesis"></i>
     </div>
+
+    <script src="static/file_test.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
 </body>
 </html>

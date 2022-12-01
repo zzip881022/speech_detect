@@ -91,6 +91,7 @@ using_model=CNN_Model()
 using_model = using_model.double()
 store_audio_file_path="temp"
 audio_file_path=""
+audio_file_name=""
 
 def set_using_model(model_path):
     global using_model
@@ -98,14 +99,15 @@ def set_using_model(model_path):
     using_model = using_model.eval() #加薪加的
 
 def audio_to_numpy_mfcc(audio_file):
-
+    global audio_file_name
     global store_audio_file_path
     global audio_file_path
-    audio_file_path=audio_file
+    audio_file_path="static/spoof_file/" + audio_file
+    audio_file_name = audio_file
     
     #-------------------------------------- audio to numpy -------------------------------------------------------
 
-    audio = tfio.audio.AudioIOTensor(audio_file)
+    audio = tfio.audio.AudioIOTensor(audio_file_path)
     audio_slice = audio[0:]
     audio_tensor=(audio_slice[:,0])
 
@@ -146,9 +148,9 @@ def audio_to_numpy_mfcc(audio_file):
 
 
 def get_prediction():
-    global audio_file_path
+    global audio_file_name
     # audio_to_numpy_mfcc(audio_file)
-    data=np.load(store_audio_file_path+"/"+audio_file_path+"_MFCC.npy")
+    data=np.load(store_audio_file_path+"/"+audio_file_name+"_MFCC.npy")
     data = torch.tensor(data)
     data =data.unsqueeze(0)
     data =data.unsqueeze(0)

@@ -140,7 +140,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 			// show the modal
 			modal.style.visibility = "visible";
 			modal.style.opacity = "1";
-			modal_status.innerHTML = "Identifying...";
+			modal_status.innerHTML = "側錄辨識中...";
 
 			// show backdrop effect
 			var backdrop = document.getElementsByClassName("backdrop")[0];
@@ -250,7 +250,7 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 					backdrop.style.opacity = "0";
 					backdrop.style.visibility = "hidden";
 
-					alert('Error! Try it again');
+					alert('裝..裝..裝置的錄音系統還沒準備好ヽ༼ಢ_ಢ༽ﾉ');
 
 				} else {
 
@@ -363,13 +363,221 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 		click.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 		link.dispatchEvent(click);
 
-		// test
+
+
+		//============================改版=========================================
+		//--------------------------------側錄辨識---------------------------------
 		var formData = new FormData();
 		formData.append('verify_model', 'transfer_cnn_noEMD_1120.pt');
-		// formData.append('audio_file', blob);
 		formData.append('audio_file', 'output.flac');
 
-		check_session = 0;
+		$.ajax({
+			url: "/predict_spoof",
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function (result) {
+				console.log('側錄結果' + result);
+				if (result == '1') {
+					// show the success modal
+					modal.classList.remove("verifying");
+					modal.classList.add("verify_success");
+					modal_icon.classList.remove("fa-spinner", "fa-spin");
+					modal_icon.classList.add("fa-check-circle");
+					modal_icon.style.color = 'white';
+					modal_status.innerHTML = "真實語音";
+					modal_status.style.color = 'white';
+					setTimeout(function () {
+						// show the success modal
+						modal.classList.remove("verify_success");
+						modal.classList.add("verifying");
+						modal_icon.classList.remove("fa-check-circle");
+						modal_icon.classList.add("fa-spinner", "fa-spin");
+						modal_icon.style.color = 'black';
+						modal_status.innerHTML = "語者辨識中...";
+						modal_status.style.color = 'black';
+
+						//--------------------------------語者辨識---------------------------------
+						$.ajax({
+							url: "/speker_recognize",
+							type: 'POST',
+							processData: false,
+							contentType: false,
+							success: function (result) {
+
+								var resultArray = new Array(); //用來接收真假語音判斷和密碼的結果
+								resultArray = result.split("/"); //resultArray[0]是speaker_id，resultArray[1]是該id的註冊帳號
+
+								console.log('語者辨識結果: ' + resultArray[0] + " 正確帳號: " + resultArray[1]);
+								var acc_num = $('#account').val();
+								console.log("登入者輸入帳號:"+acc_num)
+
+								if (resultArray[1] == acc_num) { //假設輸入的帳號與語者判定的帳號相同
+									// show the success modal
+									modal.classList.remove("verifying");
+									modal.classList.add("verify_success");
+									modal_icon.classList.remove("fa-spinner", "fa-spin");
+									modal_icon.classList.add("fa-check-circle");
+									modal_icon.style.color = 'white';
+									modal_status.innerHTML = 'Hi, ' + resultArray[1];
+									modal_status.style.color = 'white';
+									setTimeout(function () {
+										// show the success modal
+										modal.classList.remove("verify_success");
+										modal.classList.add("verifying");
+										modal_icon.classList.remove("fa-check-circle");
+										modal_icon.classList.add("fa-spinner", "fa-spin");
+										modal_icon.style.color = 'black';
+										modal_status.innerHTML = "密碼辨識中...";
+										modal_status.style.color = 'black';
+
+										setTimeout(function () {
+											//--------------------------------密碼辨識---------------------------------
+											$.ajax({
+												url: "/password_recognize",
+												type: 'POST',
+												processData: false,
+												contentType: false,
+												success: function (result) {
+													console.log('密碼結果' + result);
+													if (result == 'error' || result.toUpperCase() != final_transcript.toUpperCase()) {
+														// show the failed modal
+														modal.classList.remove("verifying");
+														modal.classList.add("verify_failed");
+														modal_icon.classList.remove("fa-spinner", "fa-spin");
+														modal_icon.classList.add("fa-times");
+														modal_icon.style.color = 'white';
+														modal_status.innerHTML = "Failed";
+														modal_status.style.color = 'white';
+														failed_reason.style.visibility = 'visible';
+														reason = '密碼驗證錯誤';
+														failed_reason.innerHTML = reason;
+														setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
+													} else{
+														// show the success modal
+														modal.classList.remove("verifying");
+														modal.classList.add("verify_success");
+														modal_icon.classList.remove("fa-spinner", "fa-spin");
+														modal_icon.classList.add("fa-check-circle");
+														modal_icon.style.color = 'white';
+														modal_status.innerHTML = "密碼驗證成功";
+														modal_status.style.color = 'white';
+														//------ 設定session保存語者編號 ------------
+														$.ajax({
+															url: "/login/" + resultArray[0],
+															type: 'POST',
+															processData: false,
+															contentType: false,
+															success: function (result) {
+
+																console.log("login success");
+																setTimeout("location.href='http://127.0.0.1:5000/chat'", 2000); // 2秒後跳轉頁面
+
+															}
+
+														});
+														//------------------------------------------
+													}
+												}
+											});
+										}, 2000);
+									}, 2000);
+
+								} else {
+
+									//顯示帳號與語者判定的不符合
+									// show the failed modal
+									modal.classList.remove("verifying");
+									modal.classList.add("verify_failed");
+									modal_icon.classList.remove("fa-spinner", "fa-spin");
+									modal_icon.classList.add("fa-times");
+									modal_icon.style.color = 'white';
+									modal_status.innerHTML = "Failed";
+									modal_status.style.color = 'white';
+									failed_reason.style.visibility = 'visible';
+									reason = '語者辨識結果與帳號不符';
+									failed_reason.innerHTML = reason;
+									setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
+								}
+
+
+
+
+
+
+
+
+
+
+
+								// if (語者辨識結果跟帳號是同一個人) {
+								// 	// show the success modal
+								// 	modal.classList.remove("verifying");
+								// 	modal.classList.add("verify_success");
+								// 	modal_icon.classList.remove("fa-spinner", "fa-spin");
+								// 	modal_icon.classList.add("fa-check-circle");
+								// 	modal_icon.style.color = 'white';
+								// 	modal_status.innerHTML = "Success";
+								// 	modal_status.style.color = 'white';
+								// 	setTimeout(function () {
+								// 		// show the success modal
+								// 		modal.classList.remove("verify_success");
+								// 		modal.classList.add("verifying");
+								// 		modal_icon.classList.remove("fa-check-circle");
+								// 		modal_icon.classList.add("fa-spinner", "fa-spin");
+								// 		modal_icon.style.color = 'black';
+								// 		modal_status.innerHTML = "密碼辨識中...";
+								// 		modal_status.style.color = 'black';
+								// 	}, 1000);
+								// } else if (result == '0') {
+								// 	// show the failed modal
+								// 	modal.classList.remove("verifying");
+								// 	modal.classList.add("verify_failed");
+								// 	modal_icon.classList.remove("fa-spinner", "fa-spin");
+								// 	modal_icon.classList.add("fa-times");
+								// 	modal_icon.style.color = 'white';
+								// 	modal_status.innerHTML = "Failed";
+								// 	modal_status.style.color = 'white';
+								// 	failed_reason.style.visibility = 'visible';
+								// 	reason = '側錄驗證錯誤';
+								// 	failed_reason.innerHTML = reason;
+								// 	setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
+								// }
+							}
+						});
+					}, 2000);
+
+				} else if (result == '0') {
+					// show the failed modal
+					modal.classList.remove("verifying");
+					modal.classList.add("verify_failed");
+					modal_icon.classList.remove("fa-spinner", "fa-spin");
+					modal_icon.classList.add("fa-times");
+					modal_icon.style.color = 'white';
+					modal_status.innerHTML = "Failed";
+					modal_status.style.color = 'white';
+					failed_reason.style.visibility = 'visible';
+					reason = '側錄驗證錯誤';
+					failed_reason.innerHTML = reason;
+					setTimeout("location.href='http://127.0.0.1:5000'", 2000); // 2秒後跳轉頁面
+				}
+			}
+		});
+		//-------------------------------------------------------------------
+
+		//---------------------語者辨識--------------------------------------
+
+		//===================================================================
+
+
+		// ===================== 原版==========================================
+		// // test
+		// var formData = new FormData();
+		// formData.append('verify_model', 'transfer_cnn_noEMD_1120.pt');
+		// formData.append('audio_file', 'output.flac');
+
+		// check_session = 0;
 
 
 		// $.ajax({
@@ -421,7 +629,6 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 		// 			modal_status.innerHTML = "Failed";
 		// 			modal_status.style.color = 'white';
 		// 			failed_reason.style.visibility = 'visible';   
-					
 		// 			let reason = '';
 		// 			if (resultArray[0] == '0') {
 		// 				reason = reason.concat(' 側錄');
@@ -439,5 +646,6 @@ recorderApp.controller('RecorderController', ['$scope', function ($scope) {
 		// 		}
 		// 	}
 		// });
+		// ====================================================================================
 	};
 }]);
