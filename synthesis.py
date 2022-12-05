@@ -27,24 +27,25 @@ import shutil
 test_audio_HMM_Real ='static/synthesis_file/test_audio_HMM_Real/' #測資
 
 
-test_audio_HMM_Real_Npy ='static/synthesis_file/test_audio_HMM_Real_Npy/'
-test_audio_HMM_Real_Emd ='static/synthesis_file/test_audio_HMM_Real_Emd/'
-test_audio_HMM_Real_mfcc_mod ='static/synthesis_file/test_audio_HMM_Real_mfcc_mod/'
+test_audio_HMM_Real_Npy ='static/synthesis_file/test_audio_HMM_Real_Npy/' #將 .wav 轉 .npy (系統生成資料夾)
+test_audio_HMM_Real_Emd ='static/synthesis_file/test_audio_HMM_Real_Emd/' #將 .npy 轉 emd (系統生成資料夾)
+test_audio_HMM_Real_mfcc_mod ='static/synthesis_file/test_audio_HMM_Real_mfcc_mod/' #將 imf 做 mfcc 後調整長度 (系統生成資料夾)
 
-REAL_model ='static/synthesis_file/HMM_Models_real.pkl'
-FAKE_model ='static/synthesis_file/HMM_Models_fake.pkl'
-REAL_centers ='static/synthesis_file/centers_Real.npy'
-FAKE_centers ='static/synthesis_file/centers_Fake.npy'
+REAL_model ='static/synthesis_file/HMM_Models_real.pkl'#真音 model
+FAKE_model ='static/synthesis_file/HMM_Models_fake.pkl'#假音 model
+REAL_centers ='static/synthesis_file/centers_Real.npy'#真音 train data 群心
+FAKE_centers ='static/synthesis_file/centers_Fake.npy'#假音 train data 群心
 
 #================================================================================================================#
 def test(fileName):
-    shutil.rmtree(test_audio_HMM_Real_Npy)
+    shutil.rmtree(test_audio_HMM_Real_Npy)#清空資料夾
     os.mkdir(test_audio_HMM_Real_Npy)
     shutil.rmtree(test_audio_HMM_Real_Emd)
     os.mkdir(test_audio_HMM_Real_Emd)
     shutil.rmtree(test_audio_HMM_Real_mfcc_mod)
     os.mkdir(test_audio_HMM_Real_mfcc_mod)
-
+    
+    #讀取 .wav 轉成 .npy
     testDir = test_audio_HMM_Real
 
     fileList = [f for f in os.listdir(testDir) if os.path.splitext(f)[1] == '.wav']
@@ -58,6 +59,7 @@ def test(fileName):
     data = tensor.numpy()
     np.save(test_audio_HMM_Real_Npy+tmp+'.npy',data)
 
+    #將 .npy 檔做 emd 處理
     emd=EMD()
     emd.FIXE_H = 6
     EMD_Dir = test_audio_HMM_Real_Npy
@@ -70,9 +72,10 @@ def test(fileName):
         data=np.load(EMD_Dir+fileName)
         t=np.linspace(0,1,len(data))
         IMFs = emd.emd(data,t)
-        np.save(test_audio_HMM_Real_Emd+tmp+'.npy',IMFs)
+        np.save(test_audio_HMM_Real_Emd+tmp+'.npy',IMFs)#將 emd 存成 .npy檔
 
 
+    #將 imf[0], imf[2], imf[3] 加在一起後做 mfcc 處理
     trainDir_Real_Emd = test_audio_HMM_Real_Emd
 
     fileList = [f for f in os.listdir(trainDir_Real_Emd) if os.path.splitext(f)[1] == '.npy']
@@ -86,7 +89,7 @@ def test(fileName):
         sum=np.array(imf[0])+np.array(imf[2])+np.array(imf[3])
 
         #mfcc=extract_mfcc(sum)
-        mfcc=librosa.feature.mfcc(y=sum,sr=16000,n_mfcc=60,hop_length=137) #要調整
+        mfcc=librosa.feature.mfcc(y=sum,sr=16000,n_mfcc=60,hop_length=137) 
 
         #修 mfcc 長度
 
@@ -103,6 +106,7 @@ def test(fileName):
         np.save(test_audio_HMM_Real_mfcc_mod+tmp+".npy", mfcc)
 
 
+    #經過 mfcc 處理後的 .npy 檔放入 testDataSet_Real 等待辨識
     testDir_Real = test_audio_HMM_Real_mfcc_mod
     fileList = [f for f in os.listdir(testDir_Real) if os.path.splitext(f)[1] == '.npy']
 
@@ -129,7 +133,7 @@ def test(fileName):
     print("Finish prepare the training data_Real")
 
     states_num = 6
-    hmm.MultinomialHMM(n_components=states_num)      #<----------------------------------
+    hmm.MultinomialHMM(n_components=states_num)     
 
     score_cnt = 0
     true = []
@@ -147,18 +151,24 @@ def test(fileName):
     score_fake=-1000
 
     #print(testDataSet_Real)
-
+    
+    
+    #載入提前訓練好的 model
     HMM_Models_real = pickle.load(open(REAL_model, 'rb'))
     HMM_Models_fake = pickle.load(open(FAKE_model, 'rb'))
 
+    #載入提前訓練好的群心
     centers_Real = np.load(REAL_centers)
     centers_Fake = np.load(FAKE_centers)
-
+    
+    
     for i in testDataSet_Real.keys():
         score_real=-1000
         score_fake=-1000
         print(str(i)+":")
 
+
+        #用訓練好的真音 train data 群心計算出最佳參數，以便後續 HMM 訓練。再來將測資丟進真音 model 評分
         #print("Real"+i)
         feature = testDataSet_Real[i]
 
@@ -185,6 +195,8 @@ def test(fileName):
             if(score>score_real):
                 score_real=score   
 
+
+        #用訓練好的假音 train data 群心計算出最佳參數，以便後續 HMM 訓練。將測資丟進假音 model 評分
         testData_Fake_label = []
         for j in range(len(feature[0])):
             dic_min = np.linalg.norm(feature[0][j]-centers_Fake[0])
@@ -204,6 +216,8 @@ def test(fileName):
             if(score>score_fake):
                 score_fake=score
 
+        
+        #分數高的為辨識結果
         if(score_real>score_fake):
             #predict = max(scoreList_Real, key=scoreList_Real.get)
     #         predict_correct=predict_correct+1
