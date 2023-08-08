@@ -26,3 +26,8 @@
 模擬用戶以語音密碼完成網路銀行快速登入驗證
 
 #overview
+![image](https://github.com/zzip881022/speech_detect/assets/61906970/ba5205da-a415-4ebe-9470-227b83b8db08)
+![image](https://github.com/zzip881022/speech_detect/assets/61906970/05f53aaa-f002-4ccb-8006-554b58c97507)
+![image](https://github.com/zzip881022/speech_detect/assets/61906970/b26ed64d-2528-4375-a6cb-fd7b6108178f)
+
+
